@@ -1,49 +1,53 @@
 {
-  "name": "fsph-squad12-app",
-  "main": "expo-router/entry",
+  "name": "fsph-squad12",
   "version": "1.0.0",
+  "description": "FSPH Squad 12 - Monorepo with React Native mobile app and Express backend",
+  "private": true,
+  "workspaces": [
+    "mobile",
+    "backend",
+    "shared"
+  ],
   "scripts": {
-    "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
-    "lint": "expo lint"
-  },
-  "dependencies": {
-    "@expo/vector-icons": "^14.1.0",
-    "@react-navigation/bottom-tabs": "^7.3.10",
-    "@react-navigation/elements": "^2.3.8",
-    "@react-navigation/native": "^7.1.6",
-    "expo": "~53.0.20",
-    "expo-blur": "~14.1.5",
-    "expo-constants": "~17.1.7",
-    "expo-font": "~13.3.2",
-    "expo-haptics": "~14.1.4",
-    "expo-image": "~2.4.0",
-    "expo-linking": "~7.1.7",
-    "expo-router": "~5.1.4",
-    "expo-splash-screen": "~0.30.10",
-    "expo-status-bar": "~2.2.3",
-    "expo-symbols": "~0.4.5",
-    "expo-system-ui": "~5.0.10",
-    "expo-web-browser": "~14.2.0",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "react-native": "0.79.5",
-    "react-native-gesture-handler": "~2.24.0",
-    "react-native-reanimated": "~3.17.4",
-    "react-native-safe-area-context": "5.4.0",
-    "react-native-screens": "~4.11.1",
-    "react-native-web": "~0.20.0",
-    "react-native-webview": "13.13.5"
+    "mobile": "cd mobile && npm run start",
+    "mobile:dev": "cd mobile && npm run start",
+    "mobile:build": "cd mobile && npm run build",
+    "backend": "cd backend && npm run dev",
+    "backend:dev": "cd backend && npm run dev",
+    "backend:start": "cd backend && npm run start",
+    "shared:build": "cd shared && npm run build",
+    "install:all": "npm install && npm run install:mobile && npm run install:backend && npm run install:shared",
+    "install:mobile": "cd mobile && npm install",
+    "install:backend": "cd backend && npm install",
+    "install:shared": "cd shared && npm install",
+    "lint": "npm run lint:mobile && npm run lint:backend && npm run lint:shared",
+    "lint:mobile": "cd mobile && npm run lint",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:shared": "cd shared && npm run lint",
+    "test": "npm run test:backend",
+    "test:backend": "cd backend && npm run test",
+    "dev": "concurrently \"npm run backend:dev\" \"npm run mobile:dev\"",
+    "clean": "rm -rf node_modules mobile/node_modules backend/node_modules shared/node_modules"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2",
-    "@types/react": "~19.0.10",
-    "typescript": "~5.8.3",
-    "eslint": "^9.25.0",
-    "eslint-config-expo": "~9.2.0"
+    "concurrently": "^8.2.2"
   },
-  "private": true
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/fsph-squad12.git"
+  },
+  "keywords": [
+    "react-native",
+    "express",
+    "nodejs",
+    "monorepo",
+    "mobile",
+    "api"
+  ],
+  "author": "FSPH Squad 12",
+  "license": "MIT"
 }
