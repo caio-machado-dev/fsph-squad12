@@ -14,7 +14,7 @@ import {
   View,
 } from 'react-native';
 
-// Paleta de Cores e Fontes
+// Paleta de Cores 
 const colors = {
   primaryRed: '#D32F2F',
   black: '#1E1E1E',
@@ -60,7 +60,6 @@ const LoginScreen = () => {
               <Text style={styles.tabTextActive}>Login</Text>
             </TouchableOpacity>
 
-            {/* AQUI ESTÁ A CORREÇÃO FINAL E DEFINITIVA */}
             <TouchableOpacity 
               style={styles.tabInactive}
               onPress={() => router.push('cadastro' as any)}
@@ -70,7 +69,6 @@ const LoginScreen = () => {
 
           </View>
 
-          {/* O resto do código permanece o mesmo */}
           <TextInput
             style={styles.input}
             placeholder="Insira o seu email"
@@ -131,7 +129,7 @@ const LoginScreen = () => {
   );
 };
 
-// Estilos (sem alterações)
+// Estilização
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,

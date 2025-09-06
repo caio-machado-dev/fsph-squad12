@@ -14,7 +14,7 @@ import {
   View,
 } from 'react-native';
 
-// Paleta de Cores e Tipos de Letra
+// Cores a serem usadas
 const colors = {
   primaryRed: '#D32F2F',
   black: '#1E1E1E',
@@ -29,7 +29,7 @@ const fonts = {
   bold: 'Roboto-Bold',
 };
 
-// AQUI ESTÁ A MÁGICA: Usamos o atalho '@' que aponta para a raiz (mobile/)
+// Imports das Logos
 const googleLogo: ImageSourcePropType = require('@/assets/images/google-logo.png');
 const facebookLogo: ImageSourcePropType = require('@/assets/images/facebook-logo.png');
 
@@ -70,7 +70,6 @@ const CadastroScreen = () => {
             </TouchableOpacity>
           </View>
 
-          {/* O resto do código permanece o mesmo */}
           <TextInput
             style={styles.input}
             placeholder="Insira o seu nome completo"
@@ -151,7 +150,7 @@ const CadastroScreen = () => {
   );
 };
 
-// Estilos (sem alterações)
+// Estilização
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
