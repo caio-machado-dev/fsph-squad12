@@ -14,7 +14,7 @@ import {
   View,
 } from 'react-native';
 
-// Paleta de Cores 
+// Cores a serem usadas
 const colors = {
   primaryRed: '#D32F2F',
   black: '#1E1E1E',
@@ -29,15 +29,18 @@ const fonts = {
   bold: 'Roboto-Bold',
 };
 
-// Assets
-const googleLogo: ImageSourcePropType = require('../../assets/images/google-logo.png');
-const facebookLogo: ImageSourcePropType = require('../../assets/images/facebook-logo.png');
+// Imports das Logos
+const googleLogo: ImageSourcePropType = require('@/assets/images/google-logo.png');
+const facebookLogo: ImageSourcePropType = require('@/assets/images/facebook-logo.png');
 
-const LoginScreen = () => {
+const CadastroScreen = () => {
   const router = useRouter();
+  const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
   const [isSenhaVisible, setIsSenhaVisible] = useState(false);
+  const [isConfirmarSenhaVisible, setIsConfirmarSenhaVisible] = useState(false);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -56,19 +59,24 @@ const LoginScreen = () => {
           contentContainerStyle={styles.scrollContent}
         >
           <View style={styles.tabSelector}>
-            <TouchableOpacity style={styles.tabActive}>
-              <Text style={styles.tabTextActive}>Login</Text>
-            </TouchableOpacity>
-
             <TouchableOpacity 
               style={styles.tabInactive}
-              onPress={() => router.push('cadastro' as any)}
+              onPress={() => router.push('login' as any)}
             >
-              <Text style={styles.tabTextInactive}>Cadastre-se</Text>
+              <Text style={styles.tabTextInactive}>Login</Text>
             </TouchableOpacity>
-
+            <TouchableOpacity style={styles.tabActive}>
+              <Text style={styles.tabTextActive}>Cadastre-se</Text>
+            </TouchableOpacity>
           </View>
 
+          <TextInput
+            style={styles.input}
+            placeholder="Insira o seu nome completo"
+            placeholderTextColor={colors.gray}
+            value={nome}
+            onChangeText={setNome}
+          />
           <TextInput
             style={styles.input}
             placeholder="Insira o seu email"
@@ -81,7 +89,7 @@ const LoginScreen = () => {
           <View style={styles.passwordContainer}>
             <TextInput
               style={styles.inputPassword}
-              placeholder="Insira a sua senha"
+              placeholder="Crie a senha"
               placeholderTextColor={colors.gray}
               secureTextEntry={!isSenhaVisible}
               value={senha}
@@ -91,14 +99,27 @@ const LoginScreen = () => {
               <Feather name={isSenhaVisible ? 'eye-off' : 'eye'} size={20} color={colors.gray} />
             </TouchableOpacity>
           </View>
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.inputPassword}
+              placeholder="Confirme a senha"
+              placeholderTextColor={colors.gray}
+              secureTextEntry={!isConfirmarSenhaVisible}
+              value={confirmarSenha}
+              onChangeText={setConfirmarSenha}
+            />
+            <TouchableOpacity onPress={() => setIsConfirmarSenhaVisible(!isConfirmarSenhaVisible)}>
+              <Feather name={isConfirmarSenhaVisible ? 'eye-off' : 'eye'} size={20} color={colors.gray} />
+            </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity>
-            <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
-          </TouchableOpacity>
+          <Text style={styles.hintText}>
+            Mínimo 8 caracteres, incluindo letras, números e caracteres especiais.
+          </Text>
 
-          <TouchableOpacity style={styles.loginButton} activeOpacity={0.8}>
-            <Text style={styles.loginButtonText}>Entrar</Text>
-            <Feather name="arrow-right" size={20} color={colors.white} />
+          <TouchableOpacity style={styles.createAccountButton} activeOpacity={0.8}>
+            <Text style={styles.createAccountButtonText}>Criar conta</Text>
+            <Feather name="arrow-up-right" size={20} color={colors.white} />
           </TouchableOpacity>
           
           <View style={styles.dividerContainer}>
@@ -218,14 +239,14 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontFamily: fonts.regular,
   },
-  forgotPasswordText: {
-    fontSize: 14,
-    color: colors.primaryRed,
-    textAlign: 'right',
+  hintText: {
+    fontSize: 12,
+    color: colors.gray,
     marginBottom: 14,
-    fontFamily: fonts.bold,
+    paddingHorizontal: 4,
+    fontFamily: fonts.regular,
   },
-  loginButton: {
+  createAccountButton: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -234,7 +255,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     marginBottom: 16,
   },
-  loginButtonText: {
+  createAccountButtonText: {
     color: colors.white,
     fontSize: 16,
     fontFamily: fonts.bold,
@@ -296,5 +317,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default CadastroScreen;
 
