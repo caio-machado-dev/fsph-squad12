@@ -1,13 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { Ionicons } from '@expo/vector-icons';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { Button } from '@react-navigation/elements';
+
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoginTab, setIsLoginTab] = useState(true);
+  const bottomSheetRef = useRef<BottomSheet>(null)
+  const snapPoints = useMemo(() => ["50%", "80%", "100%"], [])
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("handleSheetChanges", index)
+  }, [])
+  const handleExpandAction = () => bottomSheetRef.current?.expand();
+
 
   return (
     <View style={styles.container}>
@@ -21,106 +32,122 @@ export default function LoginScreen() {
       </View>
 
       {/* Main Content */}
-      <View style={styles.mainContent}>
-        {/* Login/Register Toggle */}
-        <View style={styles.tabContainer}>
-          <TouchableOpacity
-            style={[styles.tab, isLoginTab && styles.activeTab]}
-            onPress={() => setIsLoginTab(true)}
-          >
-            <Text style={[styles.tabText, isLoginTab && styles.activeTabText]}>
-              Login
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.tab, !isLoginTab && styles.activeTab]}
-            onPress={() => setIsLoginTab(false)}
-          >
-            <Text style={[styles.tabText, !isLoginTab && styles.activeTabText]}>
-              Cadastre-se
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Form */}
-        <View style={styles.formContainer}>
-          <View style={styles.formFields}>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder="Insira o seu email"
-                placeholderTextColor="#8c8c8c"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder="Insira a sua senha"
-                placeholderTextColor="#8c8c8c"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-              />
+      <GestureHandlerRootView>
+        <BottomSheet
+          ref={bottomSheetRef}
+          snapPoints={snapPoints}
+          enableDynamicSizing={false}
+          onChange={handleSheetChanges}
+          enablePanDownToClose={true}
+        >
+          <View style={styles.mainContent}>
+            {/* Login/Register Toggle */}
+            <View style={styles.tabContainer}>
               <TouchableOpacity
-                style={styles.eyeIcon}
-                onPress={() => setShowPassword(!showPassword)}
+                style={[styles.tab, isLoginTab && styles.activeTab]}
+                onPress={() => setIsLoginTab(true)}
               >
-                <Ionicons 
-                  name={showPassword ? "eye-off-outline" : "eye-outline"} 
-                  size={20} 
-                  color="#8c8c8c" 
-                />
+                <Text
+                  style={[styles.tabText, isLoginTab && styles.activeTabText]}
+                >
+                  Login
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tab, !isLoginTab && styles.activeTab]}
+                onPress={() => setIsLoginTab(false)}
+              >
+                <Text
+                  style={[styles.tabText, !isLoginTab && styles.activeTabText]}
+                >
+                  Cadastre-se
+                </Text>
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.forgotPassword}>
-              <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
-            </TouchableOpacity>
+            {/* Form */}
+            <View style={styles.formContainer}>
+              <View style={styles.formFields}>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Insira o seu email"
+                    placeholderTextColor="#8c8c8c"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                </View>
 
-            <TouchableOpacity style={styles.enterButton}>
-              <Text style={styles.enterButtonText}>Entrar</Text>
-              <Text style={styles.arrowIcon}>↗</Text>
-            </TouchableOpacity>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Insira a sua senha"
+                    placeholderTextColor="#8c8c8c"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                  />
+                  <TouchableOpacity
+                    style={styles.eyeIcon}
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
+                    <Ionicons
+                      name={showPassword ? "eye-off-outline" : "eye-outline"}
+                      size={20}
+                      color="#8c8c8c"
+                    />
+                  </TouchableOpacity>
+                </View>
 
-            {/* Divider */}
-            <View style={styles.dividerContainer}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>Ou continue como</Text>
-              <View style={styles.dividerLine} />
+                <TouchableOpacity style={styles.forgotPassword}>
+                  <Text style={styles.forgotPasswordText}>
+                    Esqueci minha senha
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.enterButton}>
+                  <Text style={styles.enterButtonText}>Entrar</Text>
+                  <Text style={styles.arrowIcon}>↗</Text>
+                </TouchableOpacity>
+
+                {/* Divider */}
+                <View style={styles.dividerContainer}>
+                  <View style={styles.dividerLine} />
+                  <Text style={styles.dividerText}>Ou continue como</Text>
+                  <View style={styles.dividerLine} />
+                </View>
+              </View>
+
+              <View style={styles.bottomSection}>
+                {/* Social Login */}
+                <View style={styles.socialButtonsRow}>
+                  <TouchableOpacity style={styles.socialButton}>
+                    <Text style={styles.googleIcon}>G</Text>
+                    <Text style={styles.socialText}>Google</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.socialButton}>
+                    <Text style={styles.facebookIcon}>f</Text>
+                    <Text style={styles.socialText}>Facebook</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <Text style={styles.termsText}>
+                  Ao prosseguir, você confirma que leu e aceita os{" "}
+                  <Text style={styles.termsLink}>Termos de Uso</Text> e a{" "}
+                  <Text style={styles.termsLink}>Política de Privacidade.</Text>
+                </Text>
+              </View>
             </View>
+
+            {/* Spacer to fill remaining space */}
+            <View style={styles.bottomSpacer} />
           </View>
-
-          <View style={styles.bottomSection}>
-            {/* Social Login */}
-            <View style={styles.socialButtonsRow}>
-              <TouchableOpacity style={styles.socialButton}>
-                <Text style={styles.googleIcon}>G</Text>
-                <Text style={styles.socialText}>Google</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
-                <Text style={styles.facebookIcon}>f</Text>
-                <Text style={styles.socialText}>Facebook</Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.termsText}>
-              Ao prosseguir, você confirma que leu e aceita os{' '}
-              <Text style={styles.termsLink}>Termos de Uso</Text> e a{' '}
-              <Text style={styles.termsLink}>Política de Privacidade.</Text>
-            </Text>
-          </View>
-        </View>
-
-        {/* Spacer to fill remaining space */}
-        <View style={styles.bottomSpacer} />
-      </View>
+        </BottomSheet>
+      </GestureHandlerRootView>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
