@@ -1,7 +1,9 @@
 import { Feather } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
+import { getLogin } from './auth';
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   Image,
   ImageSourcePropType,
   SafeAreaView,
@@ -14,7 +16,7 @@ import {
   View,
 } from 'react-native';
 
-// Cores a serem usadas
+// Paleta de Cores 
 const colors = {
   primaryRed: '#D32F2F',
   black: '#1E1E1E',
@@ -29,19 +31,18 @@ const fonts = {
   bold: 'Roboto-Bold',
 };
 
-// Imports das Logos
-const googleLogo: ImageSourcePropType = require('@/assets/images/google-logo.png');
-const facebookLogo: ImageSourcePropType = require('@/assets/images/facebook-logo.png');
+// Assets
+const googleLogo: ImageSourcePropType = require('../../assets/images/google-logo.png');
+const facebookLogo: ImageSourcePropType = require('../../assets/images/facebook-logo.png');
 
-const CadastroScreen = () => {
-  const router = useRouter();
-  const [nome, setNome] = useState('');
+const LoginScreen = () => {
+  const router = useRouter(); 
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
   const [isSenhaVisible, setIsSenhaVisible] = useState(false);
-  const [isConfirmarSenhaVisible, setIsConfirmarSenhaVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <Stack.Screen options={{ headerShown: false }} />
@@ -49,85 +50,83 @@ const CadastroScreen = () => {
 
       <View style={styles.header}>
         <Text style={styles.headerTitle}>
-          {'Você carrega\ndentro de si o poder\nde salvar vidas.'}
+          {"Você carrega\ndentro de si o poder\nde salvar vidas."}
         </Text>
       </View>
-      
+
+      {/* Formulário de Login */}
       <View style={styles.formContainer}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
           <View style={styles.tabSelector}>
-            <TouchableOpacity 
-              style={styles.tabInactive}
-              onPress={() => router.push('login' as any)}
-            >
-              <Text style={styles.tabTextInactive}>Login</Text>
-            </TouchableOpacity>
             <TouchableOpacity style={styles.tabActive}>
-              <Text style={styles.tabTextActive}>Cadastre-se</Text>
+              <Text style={styles.tabTextActive}>Login</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.tabInactive}
+              onPress={() => router.push("cadastro" as any)}
+            >
+              <Text style={styles.tabTextInactive}>Cadastre-se</Text>
             </TouchableOpacity>
           </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Insira o seu nome completo"
-            placeholderTextColor={colors.gray}
-            value={nome}
-            onChangeText={setNome}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Insira o seu email"
-            placeholderTextColor={colors.gray}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={email}
-            onChangeText={setEmail}
-          />
-          <View style={styles.passwordContainer}>
+          <View style={styles.loginContainer}>
             <TextInput
-              style={styles.inputPassword}
-              placeholder="Crie a senha"
+              style={styles.input}
+              placeholder="Insira o seu email"
               placeholderTextColor={colors.gray}
-              secureTextEntry={!isSenhaVisible}
-              value={senha}
-              onChangeText={setSenha}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={email}
+              onChangeText={setEmail}
             />
-            <TouchableOpacity onPress={() => setIsSenhaVisible(!isSenhaVisible)}>
-              <Feather name={isSenhaVisible ? 'eye-off' : 'eye'} size={20} color={colors.gray} />
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.inputPassword}
+                placeholder="Insira a sua senha"
+                placeholderTextColor={colors.gray}
+                secureTextEntry={!isSenhaVisible}
+                value={senha}
+                onChangeText={setSenha}
+              />
+              <TouchableOpacity
+                onPress={() => setIsSenhaVisible(!isSenhaVisible)}
+              >
+                <Feather
+                  name={isSenhaVisible ? "eye-off" : "eye"}
+                  size={20}
+                  color={colors.gray}
+                />
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity>
+              <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
             </TouchableOpacity>
-          </View>
-          <View style={styles.passwordContainer}>
-            <TextInput
-              style={styles.inputPassword}
-              placeholder="Confirme a senha"
-              placeholderTextColor={colors.gray}
-              secureTextEntry={!isConfirmarSenhaVisible}
-              value={confirmarSenha}
-              onChangeText={setConfirmarSenha}
-            />
-            <TouchableOpacity onPress={() => setIsConfirmarSenhaVisible(!isConfirmarSenhaVisible)}>
-              <Feather name={isConfirmarSenhaVisible ? 'eye-off' : 'eye'} size={20} color={colors.gray} />
+
+            <TouchableOpacity
+              style={styles.loginButton}
+              activeOpacity={0.8}
+              onPress={() => getLogin({ email, senha, router, setLoading })}
+            >
+              {loading ? (
+                <ActivityIndicator color={colors.white} />
+              ) : (
+                <Text style={styles.loginButtonText}>Entrar</Text>
+              )}
+              <Feather name="arrow-up-right" size={20} color={colors.white} />
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.hintText}>
-            Mínimo 8 caracteres, incluindo letras, números e caracteres especiais.
-          </Text>
-
-          <TouchableOpacity style={styles.createAccountButton} activeOpacity={0.8}>
-            <Text style={styles.createAccountButtonText}>Criar conta</Text>
-            <Feather name="arrow-up-right" size={20} color={colors.white} />
-          </TouchableOpacity>
-          
           <View style={styles.dividerContainer}>
             <View style={styles.dividerLine} />
             <Text style={styles.dividerText}>Ou continue como</Text>
             <View style={styles.dividerLine} />
           </View>
-          
+
           <View style={styles.socialLoginContainer}>
             <TouchableOpacity style={styles.socialButton}>
               <Image source={googleLogo} style={styles.socialLogo} />
@@ -140,14 +139,14 @@ const CadastroScreen = () => {
           </View>
 
           <Text style={styles.termsText}>
-            Ao prosseguir, você confirma que leu e aceita os{' '}
-            <Text style={styles.linkText}>Termos de Uso</Text> e a{' '}
+            Ao prosseguir, você confirma que leu e aceita os{" "}
+            <Text style={styles.linkText}>Termos de Uso</Text> e a{" "}
             <Text style={styles.linkText}>Política de Privacidade.</Text>
           </Text>
         </ScrollView>
       </View>
     </SafeAreaView>
-  );
+  )
 };
 
 // Estilização
@@ -157,21 +156,28 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryRed,
   },
   header: {
-    paddingHorizontal: 24,
-    paddingTop: 75,
+    paddingHorizontal: "8%",
+    paddingTop: "45%",
     paddingBottom: 20,
   },
   headerTitle: {
     fontSize: 32, 
     color: colors.white,
     fontFamily: fonts.regular,
-    lineHeight: 42, 
+    lineHeight: 31, 
+  },
+  loginContainer: {
+    width: '100%',
+    height: 'auto',
+    gap: 10,
   },
   formContainer: {
     flex: 1,
     backgroundColor: colors.white,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
   },
   scrollContent: {
     padding: 20,
@@ -239,14 +245,14 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontFamily: fonts.regular,
   },
-  hintText: {
-    fontSize: 12,
-    color: colors.gray,
+  forgotPasswordText: {
+    fontSize: 14,
+    color: colors.primaryRed,
+    textAlign: 'right',
     marginBottom: 14,
-    paddingHorizontal: 4,
-    fontFamily: fonts.regular,
+    fontFamily: fonts.bold,
   },
-  createAccountButton: {
+  loginButton: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -254,8 +260,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 14,
     marginBottom: 16,
+    gap: "60%",
   },
-  createAccountButtonText: {
+  loginButtonText: {
     color: colors.white,
     fontSize: 16,
     fontFamily: fonts.bold,
@@ -317,5 +324,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CadastroScreen;
+export default LoginScreen;
 
