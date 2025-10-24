@@ -1,6 +1,6 @@
-import { Feather } from '@expo/vector-icons';
-import { Stack, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { Feather } from "@expo/vector-icons"
+import { Stack, useRouter } from "expo-router"
+import React, { useState } from "react"
 import {
   Image,
   ImageSourcePropType,
@@ -12,64 +12,50 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
+} from "react-native"
+
+export function getServerSideProps() {
+  console.log("SSR redirect to / (login_page)/splash")
+}
 
 // Cores a serem usadas
 const colors = {
-  primaryRed: '#D32F2F',
-  black: '#1E1E1E',
-  gray: '#8C8C8C',
-  gray50: '#DADADA',
-  gray10: '#F2F2F2',
-  white: '#FFFFFF',
-};
+  primaryRed: "#D32F2F",
+  black: "#1E1E1E",
+  gray: "#8C8C8C",
+  gray50: "#DADADA",
+  gray10: "#F2F2F2",
+  white: "#FFFFFF",
+}
 
 const fonts = {
-  regular: 'Roboto-Regular',
-  bold: 'Roboto-Bold',
-};
+  regular: "Roboto-Regular",
+  bold: "Roboto-Bold",
+}
 
 // Imports das Logos
-const googleLogo: ImageSourcePropType = require('@/assets/images/google-logo.png');
-const facebookLogo: ImageSourcePropType = require('@/assets/images/facebook-logo.png');
+const googleLogo: ImageSourcePropType = require("@/assets/images/google-logo.png")
+const facebookLogo: ImageSourcePropType = require("@/assets/images/facebook-logo.png")
 
 const CadastroScreen = () => {
-  const router = useRouter();
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
-  const [isSenhaVisible, setIsSenhaVisible] = useState(false);
-  const [isConfirmarSenhaVisible, setIsConfirmarSenhaVisible] = useState(false);
+  const router = useRouter()
+  const [nome, setNome] = useState("")
+  const [email, setEmail] = useState("")
+  const [senha, setSenha] = useState("")
+  const [confirmarSenha, setConfirmarSenha] = useState("")
+  const [isSenhaVisible, setIsSenhaVisible] = useState(false)
+  const [isConfirmarSenhaVisible, setIsConfirmarSenhaVisible] = useState(false)
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <Stack.Screen options={{ headerShown: false }} />
       <StatusBar barStyle="light-content" backgroundColor={colors.primaryRed} />
 
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>
-          {"Você carrega\ndentro de si o poder\nde salvar vidas."}
-        </Text>
-      </View>
-
       <View style={styles.formContainer}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          <View style={styles.tabSelector}>
-            <TouchableOpacity
-              style={styles.tabInactive}
-              onPress={() => router.push("login" as any)}
-            >
-              <Text style={styles.tabTextInactive}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.tabActive}>
-              <Text style={styles.tabTextActive}>Cadastre-se</Text>
-            </TouchableOpacity>
-          </View>
-
           <TextInput
             style={styles.input}
             placeholder="Insira o seu nome completo"
@@ -167,7 +153,7 @@ const CadastroScreen = () => {
       </View>
     </SafeAreaView>
   )
-};
+}
 
 // Estilização
 const styles = StyleSheet.create({
@@ -190,8 +176,6 @@ const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     backgroundColor: colors.white,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
     paddingHorizontal: 20,
     paddingVertical: 20,
   },
@@ -284,7 +268,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 14,
     marginBottom: 16,
-    gap: "60%"
+    gap: "60%",
   },
   createAccountButtonText: {
     color: colors.white,
@@ -348,5 +332,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default CadastroScreen;
-
+export default CadastroScreen
