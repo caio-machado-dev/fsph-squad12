@@ -1,29 +1,109 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-require('dotenv').config();
+// ==========================
+// SERVIDOR EXPRESS PRINCIPAL
+// ==========================
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import dotenv from "dotenv";
+import path from "path";
+import session from "express-session";
+import passport from "passport";
+
+// Carrega variáveis do .env
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ==========================
+// MIDDLEWARES BÁSICOS
+// ==========================
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'OK', message: 'FSPH Squad 12 API is running' });
+// ==========================
+// CONFIGURAÇÃO DE SESSÃO
+// ==========================
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secret_key_default",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: process.env.NODE_ENV === "production" },
+  })
+);
+
+// Inicializa Passport (autenticação)
+app.use(passport.initialize());
+app.use(passport.session());
+
+// ==========================
+// ROTA DE VERIFICAÇÃO
+// ==========================
+app.get("/health", (req, res) => {
+  res.json({ status: "OK", message: "API FSPH Squad 12 está rodando 🚀" });
 });
 
-app.use('/api', require('./routes'));
+// ==========================
+// ROTAS PRINCIPAIS
+// ==========================
+import routes from "./routes/index.js";
+import authRoutes from "./routes/auth.js";
 
+app.use("/api", routes);
+app.use("/auth", authRoutes);
+
+// ==========================
+// MIDDLEWARE GLOBAL DE ERRO
+// ==========================
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
+  res.status(500).json({ error: "Erro interno no servidor" });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// ===============================
+// EXECUTA O SCRIPT DE ATUALIZAÇÃO
+// ===============================
+import startImportSchedule from "./scripts/importarEstoque.js";
 
-module.exports = app;
+try {
+  startImportSchedule();
+  console.log("Script de atualização de estoque iniciado automaticamente.");
+} catch (err) {
+  console.error("Falha ao iniciar o script de estoque:", err.message);
+}
+
+// ===========================================
+// FUNÇÃO PARA INICIAR O SERVIDOR COM TENTATIVAS
+// ===========================================
+function startServer(port = PORT, attempts = 5) {
+  const server = app.listen(port, () => {
+    console.log(`✅ Servidor rodando na porta ${port}`);
+  });
+
+  server.on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+      console.warn(`⚠️ Porta ${port} ocupada.`);
+      if (attempts > 0) {
+        const nextPort = port + 1;
+        console.log(`Tentando porta ${nextPort} (${attempts} tentativas restantes)...`);
+        setTimeout(() => startServer(nextPort, attempts - 1), 500);
+      } else {
+        console.error("❌ Não foi possível iniciar o servidor: todas as portas tentadas estão ocupadas.");
+        console.error("Se quiser liberar a porta 3000 rode no PowerShell:");
+        console.error("  netstat -ano | findstr :3000");
+        console.error("  taskkill /PID <pid> /F");
+        process.exit(1);
+      }
+    } else {
+      console.error("Erro no servidor:", err);
+      process.exit(1);
+    }
+  });
+}
+
+startServer();
+
+export default app;
