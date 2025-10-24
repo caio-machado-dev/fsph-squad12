@@ -11,6 +11,7 @@ export default function Layout() {
         headerShadowVisible: false,
         headerTintColor: "#000",
         tabBarStyle: { backgroundColor: "#fff" },
+        headerShown: false,
       }}
     >
       <Tabs.Screen
@@ -18,8 +19,8 @@ export default function Layout() {
         options={{
           title: "Inicio",
           tabBarIcon: ({ color, focused }) => (
-            <Foundation
-              name={focused ? "home" : "home"}
+            <Ionicons
+              name={focused ? "home" : "home-outline"}
               size={24}
               color={color}
             />

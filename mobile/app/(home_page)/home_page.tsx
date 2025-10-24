@@ -1,19 +1,70 @@
-import { ThemedText } from '@/components/ThemedText';
+import { ThemedText } from "@/components/ThemedText"
+import { FontAwesome, FontAwesome6 } from "@expo/vector-icons"
+import { useRouter } from "expo-router"
 import * as React from "react"
-import { Text, StyleSheet, View} from "react-native"
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { shadows } from "./shadow"
-import { Link } from 'expo-router';
-import { FontAwesome, FontAwesome6 } from '@expo/vector-icons'
 
 export default function Frame116() {
+  const router = useRouter()
+  const [local, setLocal] = React.useState("")
+  const [data, setData] = React.useState("")
+  const [hora, setHora] = React.useState("")
+  const [nextAppointment, setNextAppointment] = React.useState<null | {
+    local: string
+    data: string
+    hora: string
+  }>(null)
+  const [showForm, setShowForm] = React.useState(false)
+
+  const handleSchedule = () => {
+    if (!local.trim() || !data.trim() || !hora.trim()) {
+      Alert.alert(
+        "Preencha todos os campos",
+        "Por favor informe local, data e hora para o agendamento."
+      )
+      return
+    }
+
+    setNextAppointment({ local, data, hora })
+    Alert.alert(
+      "Agendamento confirmado",
+      `Local: ${local}\nData: ${data}\nHora: ${hora}`
+    )
+    // limpar campos e fechar formulário
+    setLocal("")
+    setData("")
+    setHora("")
+    setShowForm(false)
+  }
 
   const Line = () => {
-    return <View style={styles.line} />;
+    return <View style={styles.line} />
   }
 
   return (
     <SafeAreaView style={styles.parent}>
+      {/* Profile header: foto e nome do usuário */}
+      <View style={styles.profileContainer}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => router.push("/profile" as any)}
+          style={styles.profileLink}
+        >
+          {/* substituir require por imagem do usuário se disponível */}
+          <FontAwesome
+            name="user-circle"
+            size={48}
+            color="#d32f2f"
+            style={styles.profileImage}
+          />
+        </TouchableOpacity>
+        <View style={styles.profileInfo}>
+          <ThemedText style={styles.profileGreeting}>Olá,</ThemedText>
+          <ThemedText style={styles.profileName}>Usuário</ThemedText>
+        </View>
+      </View>
       <View style={[styles.view, styles.viewFlexBox]}>
         <View style={[styles.frameParent, shadows.xl]}>
           <View style={styles.vidasHumanasPrecisamDeVocWrapper}>
@@ -76,6 +127,31 @@ export default function Frame116() {
             </View>
           </View>
         </View>
+        {/* Agendamentos */}
+        <View style={styles.scheduleContainer}>
+          <View style={styles.card}>
+            <View style={styles.cardTitleContainer}>
+              <Text style={styles.cardTitle}>Seu próximo agendamento</Text>
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardText}>
+                {nextAppointment
+                  ? `${nextAppointment.local} — ${nextAppointment.data} às ${nextAppointment.hora}`
+                  : "Sem agendamentos próximos"}
+              </Text>
+              <TouchableOpacity
+                style={styles.cardButton}
+                onPress={() => {
+                  console.log("navegando para scheduling")
+                  router.push("/(second_page)/scheduling" as any)
+                }}
+                activeOpacity={0.9}
+              >
+                <Text style={styles.cardButtonText}>Agendar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       </View>
     </SafeAreaView>
   )
@@ -84,7 +160,7 @@ export default function Frame116() {
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    backgroundColor: "#ffffffff",
+    //backgroundColor: "#c2ababff",
   },
   line: {
     borderBlockColor: "#ccc",
@@ -107,10 +183,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   wrapperBorder: {
-    //borderColor: "rgba(218, 218, 218, 0.3)",
     height: "auto",
     padding: 3,
-    //borderWidth: 1,
     borderStyle: "solid",
     justifyContent: "center",
     alignItems: "center",
@@ -134,11 +208,10 @@ const styles = StyleSheet.create({
   view: {
     width: "100%",
     height: 12,
-    flexDirection: "row",
+    flexDirection: "column",
     overflow: "hidden",
     alignItems: "center",
     flex: 1,
-    //backgroundColor: "#834b4bff",
   },
   frameParent: {
     width: "90%",
@@ -150,6 +223,8 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     alignItems: "center",
     overflow: "hidden",
+    alignSelf: "center",
+    marginVertical: 8,
   },
   vidasHumanasPrecisamDeVocWrapper: {
     width: "100%",
@@ -192,7 +267,7 @@ const styles = StyleSheet.create({
     width: "auto",
   },
   frameParent2: {
-    width: 'auto',
+    width: "auto",
   },
   vectorContainer: {
     alignSelf: "stretch",
@@ -208,5 +283,124 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  profileContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    gap: 12,
+  },
+  profileLink: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  profileImage: {
+    // se trocar por <Image />, ajustar width/height
+    width: 48,
+    height: 48,
+  },
+  profileInfo: {
+    justifyContent: "center",
+  },
+  profileGreeting: {
+    fontSize: 12,
+    color: "#666",
+    fontFamily: "Roboto-Regular",
+  },
+  profileName: {
+    fontSize: 16,
+    fontFamily: "Roboto-Bold",
+    color: "#111",
+  },
+  scheduleContainer: {
+    marginTop: 16,
+    //paddingHorizontal: 20,
+    //paddingVertical: 12,
+    width: "90%",
+    alignSelf: "center",
+  },
+  scheduleTitle: {
+    fontSize: 16,
+    fontFamily: "Roboto-Bold",
+    marginBottom: 8,
+    color: "#111",
+  },
+  input: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#e6e6e6",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginBottom: 8,
+    fontFamily: "Roboto-Regular",
+  },
+  scheduleButton: {
+    backgroundColor: "#d32f2f",
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 4,
+  },
+  scheduleButtonText: {
+    color: "#fff",
+    fontFamily: "Roboto-Bold",
+    fontSize: 16,
+  },
+  cardTitle: {
+    fontSize: 14,
+    color: "#9b9b9b",
+    fontFamily: "Roboto-Bold",
+    marginBottom: 8,
+    paddingLeft: 4,
+  },
+  cardTitleContainer: {
+    width: "100%",
+    paddingBottom: 5,
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 12,
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    // leve sombra
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  cardContent: {
+    //flex: 1,
+    gap: "17%",
+    //paddingRight: 12,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  cardText: {
+    fontSize: 20,
+    color: "#111",
+    fontFamily: "Roboto-Regular",
+  },
+  cardButton: {
+    backgroundColor: "#d32f2f",
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 24,
+  },
+  cardButtonText: {
+    color: "#fff",
+    fontFamily: "Roboto-Bold",
+    fontSize: 16,
+  },
+  formWrap: {
+    marginTop: 12,
+  },
 })
-
