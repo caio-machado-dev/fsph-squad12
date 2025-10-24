@@ -1,6 +1,9 @@
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import Constants from 'expo-constants';
 import { Feather } from "@expo/vector-icons"
 import { useRouter } from "expo-router"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import {
   ActivityIndicator,
   Image,
@@ -45,40 +48,46 @@ const LoginScreen = () => {
     const value = await getLogin({ email, senha })
     console.log(value)
     if (value.success) {
-      // navegar para a próxima tela (exemplo)
       router.replace("/(home_page)/home_page")
-    }else {
+    } else {
       alert(value.message || "Erro ao tentar logar.")
     }
   }
 
-  //Função para mostrar e esconder o login com google
-  // const [mostra, setMostra] = useState(false);
+  // Configuração do Google Auth
+  WebBrowser.maybeCompleteAuthSession();
+
+  const webClientId = Constants.expoConfig?.extra?.GOOGLE_WEB_CLIENT_ID || '186834080659-bvsr5g2ocvu78j8dq2sa8oj6kdm0nbn2.apps.googleusercontent.com';
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    webClientId,
+  });
+
+  // Captura o resultado do login Google
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { authentication } = response;
+      console.log('✅ Login Google bem-sucedido', authentication);
+
+      // Aqui você pode enviar o token para o backend
+      // fetch('http://localhost:3000/auth/google', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ token: authentication.accessToken }),
+      // });
+
+      router.replace('/(home_page)/home_page');
+    }
+  }, [response]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* <Stack.Screen options={{ headerShown: false }} />
-      <StatusBar barStyle="light-content" backgroundColor={colors.primaryRed} /> */}
-
       {/* Formulário de Login */}
       <View style={styles.formContainer}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          {/* <View style={styles.tabSelector}>
-            <TouchableOpacity style={styles.tabActive}>
-              <Text style={styles.tabTextActive}>Login</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.tabInactive}
-              onPress={() => router.push("cadastro" as any)}
-            >
-              <Text style={styles.tabTextInactive}>Cadastre-se</Text>
-            </TouchableOpacity>
-          </View> */}
-
           <View style={styles.loginContainer}>
             <TextInput
               style={styles.input}
@@ -98,9 +107,7 @@ const LoginScreen = () => {
                 value={senha}
                 onChangeText={setSenha}
               />
-              <TouchableOpacity
-                onPress={() => setIsSenhaVisible(!isSenhaVisible)}
-              >
+              <TouchableOpacity onPress={() => setIsSenhaVisible(!isSenhaVisible)}>
                 <Feather
                   name={isSenhaVisible ? "eye-off" : "eye"}
                   size={20}
@@ -134,10 +141,15 @@ const LoginScreen = () => {
           </View>
 
           <View style={styles.socialLoginContainer}>
-            <TouchableOpacity style={styles.socialButton}>
+            <TouchableOpacity 
+              style={styles.socialButton} 
+              onPress={() => promptAsync()}
+              disabled={!request}
+            >
               <Image source={googleLogo} style={styles.socialLogo} />
               <Text style={styles.socialButtonText}>Google</Text>
             </TouchableOpacity>
+
             <TouchableOpacity style={styles.socialButton}>
               <Image source={facebookLogo} style={styles.socialLogo} />
               <Text style={styles.socialButtonText}>Facebook</Text>
@@ -155,7 +167,6 @@ const LoginScreen = () => {
   )
 }
 
-// Estilização
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -180,8 +191,6 @@ const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     backgroundColor: colors.white,
-    //borderTopLeftRadius: 24,
-    //borderTopRightRadius: 24,
     paddingHorizontal: 20,
     paddingVertical: 20,
   },
