@@ -1,7 +1,9 @@
-import { Feather } from '@expo/vector-icons';
-import { Stack, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { Feather } from "@expo/vector-icons"
+import { Stack, useRouter } from "expo-router"
+import React, { useState } from "react"
 import {
+  Image,
+  ImageSourcePropType,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -9,67 +11,51 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
-} from 'react-native';
+  View,
+} from "react-native"
+
+export function getServerSideProps() {
+  console.log("SSR redirect to / (login_page)/splash")
+}
 
 // Cores a serem usadas
 const colors = {
-  primaryRed: '#D32F2F',
-  black: '#1E1E1E',
-  gray: '#8C8C8C',
-  gray50: '#DADADA',
-  gray10: '#F2F2F2',
-  white: '#FFFFFF',
-};
+  primaryRed: "#D32F2F",
+  black: "#1E1E1E",
+  gray: "#8C8C8C",
+  gray50: "#DADADA",
+  gray10: "#F2F2F2",
+  white: "#FFFFFF",
+}
 
 const fonts = {
-  regular: 'Roboto-Regular',
-  bold: 'Roboto-Bold',
-};
+  regular: "Roboto-Regular",
+  bold: "Roboto-Bold",
+}
 
-// Tela de cadastro: coleta nome, email e senhas
+// Imports das Logos
+const googleLogo: ImageSourcePropType = require("@/assets/images/google-logo.png")
+const facebookLogo: ImageSourcePropType = require("@/assets/images/facebook-logo.png")
+
 const CadastroScreen = () => {
-  const router = useRouter(); // navegação entre telas
-  // estados do formulário
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
-  // controlar visibilidade de senha
-  const [isSenhaVisible, setIsSenhaVisible] = useState(false);
-  const [isConfirmarSenhaVisible, setIsConfirmarSenhaVisible] = useState(false);
-  // mostra erros no campo ao invés do alert
-  const [fieldErrors, setFieldErrors] = useState<any>({});
+  const router = useRouter()
+  const [nome, setNome] = useState("")
+  const [email, setEmail] = useState("")
+  const [senha, setSenha] = useState("")
+  const [confirmarSenha, setConfirmarSenha] = useState("")
+  const [isSenhaVisible, setIsSenhaVisible] = useState(false)
+  const [isConfirmarSenhaVisible, setIsConfirmarSenhaVisible] = useState(false)
 
   return (
-    // Header/Cabeçalho
     <SafeAreaView style={styles.safeArea}>
       <Stack.Screen options={{ headerShown: false }} />
       <StatusBar barStyle="light-content" backgroundColor={colors.primaryRed} />
-
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>
-          {"Você carrega\ndentro de si o poder\nde salvar vidas."}
-        </Text>
-      </View>
 
       <View style={styles.formContainer}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          <View style={styles.tabSelector}>
-            <TouchableOpacity
-              style={styles.tabInactive}
-              onPress={() => router.push("login" as any)}
-            >
-              <Text style={styles.tabTextInactive}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.tabActive}>
-              <Text style={styles.tabTextActive}>Cadastre-se</Text>
-            </TouchableOpacity>
-          </View>
-
           <TextInput
             style={styles.input}
             placeholder="Insira o seu nome completo"
@@ -77,9 +63,6 @@ const CadastroScreen = () => {
             value={nome}
             onChangeText={setNome}
           />
-          {/* mostra erro no nome, se houver */}
-          {fieldErrors.nome ? <Text style={styles.errorText}>{fieldErrors.nome}</Text> : null}
-
           <TextInput
             style={styles.input}
             placeholder="Insira o seu email"
@@ -89,51 +72,48 @@ const CadastroScreen = () => {
             value={email}
             onChangeText={setEmail}
           />
-          {/* erro de email, se existir */}
-          {fieldErrors.email ? <Text style={styles.errorText}>{fieldErrors.email}</Text> : null}
-
-          <View style={styles.passwordContainer}>
-            <TextInput
-              style={styles.inputPassword}
-              placeholder="Senha"
-              placeholderTextColor={colors.gray}
-              secureTextEntry={!isSenhaVisible}
-              value={senha}
-              onChangeText={setSenha}
-            />
-            <TouchableOpacity onPress={() => setIsSenhaVisible(!isSenhaVisible)}>
-              <Feather
-                name={isSenhaVisible ? "eye-off" : "eye"}
-                size={20}
-                color={colors.gray}
+          <View style={styles.passwordFields}>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.inputPassword}
+                placeholder="Crie a senha"
+                placeholderTextColor={colors.gray}
+                secureTextEntry={!isSenhaVisible}
+                value={senha}
+                onChangeText={setSenha}
               />
-            </TouchableOpacity>
-          </View>
-          {/* erro de senha */}
-          {fieldErrors.senha ? <Text style={styles.errorText}>{fieldErrors.senha}</Text> : null}
-
-          <View style={styles.passwordContainer}>
-            <TextInput
-              style={styles.inputPassword}
-              placeholder="Confirme a senha"
-              placeholderTextColor={colors.gray}
-              secureTextEntry={!isConfirmarSenhaVisible}
-              value={confirmarSenha}
-              onChangeText={setConfirmarSenha}
-            />
-            <TouchableOpacity
-              onPress={() => setIsConfirmarSenhaVisible(!isConfirmarSenhaVisible)}
-            >
-              <Feather
-                name={isConfirmarSenhaVisible ? "eye-off" : "eye"}
-                size={20}
-                color={colors.gray}
+              <TouchableOpacity
+                onPress={() => setIsSenhaVisible(!isSenhaVisible)}
+              >
+                <Feather
+                  name={isSenhaVisible ? "eye-off" : "eye"}
+                  size={20}
+                  color={colors.gray}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.inputPassword}
+                placeholder="Confirme a senha"
+                placeholderTextColor={colors.gray}
+                secureTextEntry={!isConfirmarSenhaVisible}
+                value={confirmarSenha}
+                onChangeText={setConfirmarSenha}
               />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  setIsConfirmarSenhaVisible(!isConfirmarSenhaVisible)
+                }
+              >
+                <Feather
+                  name={isConfirmarSenhaVisible ? "eye-off" : "eye"}
+                  size={20}
+                  color={colors.gray}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-          {/* mostra erro de confirmação */}
-          {fieldErrors.confirmarSenha ? <Text style={styles.errorText}>{fieldErrors.confirmarSenha}</Text> : null}
-
           <Text style={styles.hintText}>
             Mínimo 8 caracteres, incluindo letras, números e caracteres
             especiais.
@@ -142,22 +122,27 @@ const CadastroScreen = () => {
           <TouchableOpacity
             style={styles.createAccountButton}
             activeOpacity={0.8}
-            onPress={() => {
-              setFieldErrors({});
-              const { validateRegistrationFields } = require('./credentials');
-              const errors = validateRegistrationFields({ nome, email, senha, confirmarSenha });
-              if (Object.keys(errors).length > 0) {
-                setFieldErrors(errors);
-                return;
-              }
-
-              // redireciona para home se tudo estiver válido
-              router.replace('/(home_page)/home_page');
-            }}
           >
             <Text style={styles.createAccountButtonText}>Criar conta</Text>
             <Feather name="arrow-up-right" size={20} color={colors.white} />
           </TouchableOpacity>
+
+          <View style={styles.dividerContainer}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>Ou continue como</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <View style={styles.socialLoginContainer}>
+            <TouchableOpacity style={styles.socialButton}>
+              <Image source={googleLogo} style={styles.socialLogo} />
+              <Text style={styles.socialButtonText}>Google</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialButton}>
+              <Image source={facebookLogo} style={styles.socialLogo} />
+              <Text style={styles.socialButtonText}>Facebook</Text>
+            </TouchableOpacity>
+          </View>
 
           <Text style={styles.termsText}>
             Ao prosseguir, você confirma que leu e aceita os{" "}
@@ -168,7 +153,7 @@ const CadastroScreen = () => {
       </View>
     </SafeAreaView>
   )
-};
+}
 
 // Estilização
 const styles = StyleSheet.create({
@@ -178,21 +163,19 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: "8%",
-    paddingTop: "20%",
-    paddingBottom: "5%",
+    paddingTop: "45%",
+    paddingBottom: 20,
   },
   headerTitle: {
     fontSize: 32,
     color: colors.white,
     fontFamily: fonts.regular,
     lineHeight: 31,
-    transform: [{ translateY: -10 }],
+    letterSpacing: 0.5,
   },
   formContainer: {
     flex: 1,
     backgroundColor: colors.white,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
     paddingHorizontal: 20,
     paddingVertical: 20,
   },
@@ -245,8 +228,13 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontFamily: fonts.regular,
   },
+  passwordFields: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 10,
+  },
 
-  /* passwordContainer reuse para campos empilhados */
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -256,7 +244,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 16,
     marginBottom: 10,
-    // removida largura fixa para ocupar 100% do container
+    width: "48.5%",
   },
   inputPassword: {
     flex: 1,
@@ -280,7 +268,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 14,
     marginBottom: 16,
-    gap: "60%"
+    gap: "60%",
   },
   createAccountButtonText: {
     color: colors.white,
@@ -288,25 +276,60 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bold,
     marginRight: 8,
   },
+  dividerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.gray50,
+  },
+  dividerText: {
+    marginHorizontal: 16,
+    fontSize: 12,
+    color: colors.gray,
+    fontFamily: fonts.regular,
+  },
+  socialLoginContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  socialButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: colors.gray50,
+    borderRadius: 12,
+    paddingVertical: 14,
+    marginHorizontal: 4,
+  },
+  socialLogo: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+  },
+  socialButtonText: {
+    fontSize: 14,
+    color: colors.black,
+    fontFamily: fonts.bold,
+  },
   termsText: {
     fontSize: 12,
     color: colors.gray,
     textAlign: "center",
     lineHeight: 18,
     fontFamily: fonts.regular,
-    marginTop: 4,
   },
   linkText: {
     color: colors.primaryRed,
     textDecorationLine: "underline",
     fontFamily: fonts.bold,
   },
-  errorText: {
-    color: colors.primaryRed,
-    fontSize: 13,
-    marginBottom: 8,
-    fontFamily: fonts.regular,
-  },
 })
 
-export default CadastroScreen;
+export default CadastroScreen
