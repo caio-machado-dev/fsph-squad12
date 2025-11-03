@@ -1,85 +1,107 @@
-import { Feather } from '@expo/vector-icons';
-import { Stack, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useIdTokenAuthRequest } from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import Constants from 'expo-constants';
+import { Feather } from "@expo/vector-icons"
+import { useRouter } from "expo-router"
+import React, { useState, useEffect } from "react"
 import {
   ActivityIndicator,
   Image,
   ImageSourcePropType,
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { getLogin } from './auth';
-import { FieldErrors, validateCredentialsFields } from './credentials';
+} from "react-native"
+import { getLogin } from "./auth"
 
-// Paleta de Cores 
 const colors = {
-  primaryRed: '#D32F2F',
-  black: '#1E1E1E',
-  gray: '#8C8C8C',
-  gray50: '#DADADA',
-  gray10: '#F2F2F2',
-  white: '#FFFFFF',
-};
+  primaryRed: "#D32F2F",
+  black: "#1E1E1E",
+  gray: "#8C8C8C",
+  gray50: "#DADADA",
+  gray10: "#F2F2F2",
+  white: "#FFFFFF",
+}
 
 const fonts = {
-  regular: 'Roboto-Regular',
-  bold: 'Roboto-Bold',
-};
+  regular: "Roboto-Regular",
+  bold: "Roboto-Bold",
+}
 
-// Assets
-const googleLogo: ImageSourcePropType = require('../../assets/images/google-logo.png');
-const facebookLogo: ImageSourcePropType = require('../../assets/images/facebook-logo.png');
+const googleLogo: ImageSourcePropType = require("../../assets/images/google-logo.png")
+const facebookLogo: ImageSourcePropType = require("../../assets/images/facebook-logo.png")
 
 const LoginScreen = () => {
-  const router = useRouter(); // navegação entre telas
-  // estado do formulário
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  // controla se a senha fica visível ao usuário
-  const [isSenhaVisible, setIsSenhaVisible] = useState(false);
-  // flag de carregamento ao submeter o formulário
-  const [loading, setLoading] = useState(false);
-  // erros por campo para exibir mensagens ao usuário
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const router = useRouter()
+  const [email, setEmail] = useState("")
+  const [senha, setSenha] = useState("")
+  const [isSenhaVisible, setIsSenhaVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  
+  async function handleSubmit() {
+    const value = await getLogin({ email, senha })
+    console.log(value)
+    if (value.success) {
+      router.replace("/(home_page)/home_page")
+    } else {
+      alert(value.message || "Erro ao tentar logar.")
+    }
+  }
+
+  WebBrowser.maybeCompleteAuthSession();
+
+  const webClientId = Constants.expoConfig?.extra?.GOOGLE_WEB_CLIENT_ID || 
+    '186834080659-bvsr5g2ocvu78j8dq2sa8oj6kdm0nbn2.apps.googleusercontent.com';
+
+  const [request, response, promptAsync] = useIdTokenAuthRequest({
+    webClientId,
+    scopes: ['openid', 'profile', 'email'],
+  });
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      const idToken = response.params?.id_token;
+
+      if (!idToken) {
+        alert("Erro de autenticação: O idToken do Google é obrigatório.");
+        return;
+      }
+
+      console.log("✅ Login Google bem-sucedido:", idToken);
+
+      // Troque "localhost" pelo IP da sua máquina caso seja testando no celular
+      fetch("http://localhost:3000/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      })
+        .then(async (res) => {
+          const data = await res.json();
+          if (res.ok && data.token) {
+            console.log("✅ Login backend:", data);
+            router.replace("/(home_page)/home_page");
+          } else {
+            alert(`Erro de autenticação: ${data.error || "Desconhecido"}`);
+          }
+        })
+        .catch((err) => {
+          console.error("Erro no fetch:", err);
+          alert("Erro ao conectar ao servidor de autenticação. Verifique o IP.");
+        });
+    }
+  }, [response]);
+
   return (
-    // Cabeçalho/Header
     <SafeAreaView style={styles.safeArea}>
-      <Stack.Screen options={{ headerShown: false }} />
-      <StatusBar barStyle="light-content" backgroundColor={colors.primaryRed} />
-
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>
-          {"Você carrega\ndentro de si o poder\nde salvar vidas."}
-        </Text>
-      </View>
-
-      {/* Formulário de Login */}
       <View style={styles.formContainer}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          <View style={styles.tabSelector}>
-            <TouchableOpacity style={styles.tabActive}>
-              <Text style={styles.tabTextActive}>Login</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.tabInactive}
-              onPress={() => router.push("cadastro" as any)}
-            >
-              <Text style={styles.tabTextInactive}>Cadastre-se</Text>
-            </TouchableOpacity>
-          </View>
-
           <View style={styles.loginContainer}>
             <TextInput
               style={styles.input}
@@ -90,9 +112,6 @@ const LoginScreen = () => {
               value={email}
               onChangeText={setEmail}
             />
-            {/* mostra erro de email, se houver */}
-            {fieldErrors.email ? <Text style={styles.errorText}>{fieldErrors.email}</Text> : null}
-            {/* campo de senha com botão para mostrar/ocultar */}
             <View style={styles.passwordContainer}>
               <TextInput
                 style={styles.inputPassword}
@@ -102,9 +121,7 @@ const LoginScreen = () => {
                 value={senha}
                 onChangeText={setSenha}
               />
-              <TouchableOpacity
-                onPress={() => setIsSenhaVisible(!isSenhaVisible)}
-              >
+              <TouchableOpacity onPress={() => setIsSenhaVisible(!isSenhaVisible)}>
                 <Feather
                   name={isSenhaVisible ? "eye-off" : "eye"}
                   size={20}
@@ -112,41 +129,15 @@ const LoginScreen = () => {
                 />
               </TouchableOpacity>
             </View>
-            {/* mostra erro da senha, se existir */}
-            {fieldErrors.senha ? <Text style={styles.errorText}>{fieldErrors.senha}</Text> : null}
 
-            {/* ação de recuperar senha (não implementada) */}
             <TouchableOpacity>
               <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
             </TouchableOpacity>
 
-            {/* botão principal: valida campos e chama getLogin */}
             <TouchableOpacity
               style={styles.loginButton}
               activeOpacity={0.8}
-              onPress={async () => {
-                // limpa erros anteriores
-                setFieldErrors({});
-                // validação rápida no cliente
-                const errors = validateCredentialsFields({ email, senha });
-                if (Object.keys(errors).length > 0) {
-                  setFieldErrors(errors);
-                  return;
-                }
-
-                // chama a função de login (retorna sucesso/erro)
-                setLoading(true);
-                const res = await getLogin({ email, senha });
-                setLoading(false);
-
-                if (res && res.success === false) {
-                  setFieldErrors({ email: res.message, senha: res.message });
-                  return;
-                }
-
-                // em caso de sucesso, navega para home (UI decide a navegação)
-                if (res && res.success === true) router.replace('/(home_page)/home_page');
-              }}
+              onPress={handleSubmit}
             >
               {loading ? (
                 <ActivityIndicator color={colors.white} />
@@ -164,10 +155,15 @@ const LoginScreen = () => {
           </View>
 
           <View style={styles.socialLoginContainer}>
-            <TouchableOpacity style={styles.socialButton}>
+            <TouchableOpacity 
+              style={styles.socialButton} 
+              onPress={() => promptAsync()}
+              disabled={!request}
+            >
               <Image source={googleLogo} style={styles.socialLogo} />
               <Text style={styles.socialButtonText}>Google</Text>
             </TouchableOpacity>
+
             <TouchableOpacity style={styles.socialButton}>
               <Image source={facebookLogo} style={styles.socialLogo} />
               <Text style={styles.socialButtonText}>Facebook</Text>
@@ -183,189 +179,28 @@ const LoginScreen = () => {
       </View>
     </SafeAreaView>
   )
-};
+}
 
-// Estilização
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.primaryRed,
-  },
-  header: {
-    paddingHorizontal: "8%",
-    paddingTop: "20%",
-    paddingBottom: "5%",
-  },
-  headerTitle: {
-    fontSize: 32, 
-    color: colors.white,
-    fontFamily: fonts.regular,
-    lineHeight: 31,
-    transform: [{ translateY: -15 }]
-  },
-  loginContainer: {
-    width: '100%',
-    height: 'auto',
-    gap: 10,
-  },
-  formContainer: {
-    flex: 1,
-    backgroundColor: colors.white,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-  },
-  scrollContent: {
-    padding: 20,
-  },
-  tabSelector: {
-    flexDirection: 'row',
-    backgroundColor: colors.gray10,
-    borderRadius: 99,
-    padding: 4,
-    marginBottom: 16,
-  },
-  tabInactive: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  tabActive: {
-    flex: 1,
-    backgroundColor: colors.white,
-    borderRadius: 99,
-    paddingVertical: 10,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
-  },
-  tabTextInactive: {
-    fontSize: 14,
-    color: colors.gray,
-    fontFamily: fonts.regular,
-  },
-  tabTextActive: {
-    fontSize: 14,
-    color: colors.black,
-    fontFamily: fonts.bold,
-  },
-  input: {
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.gray50,
-    borderRadius: 12,
-    paddingVertical: 13,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    marginBottom: 10,
-    color: colors.black,
-    fontFamily: fonts.regular,
-  },
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.gray50,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    marginBottom: 10,
-  },
-  inputPassword: {
-    flex: 1,
-    paddingVertical: 13,
-    fontSize: 16,
-    color: colors.black,
-    fontFamily: fonts.regular,
-  },
-  forgotPasswordText: {
-    fontSize: 14,
-    color: colors.primaryRed,
-    textAlign: 'right',
-    marginBottom: 14,
-    fontFamily: fonts.bold,
-  },
-  loginButton: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.primaryRed,
-    borderRadius: 12,
-    paddingVertical: 14,
-    marginBottom: 16,
-    gap: "60%",
-  },
-  loginButtonText: {
-    color: colors.white,
-    fontSize: 16,
-    fontFamily: fonts.bold,
-    marginRight: 8,
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.gray50,
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    fontSize: 12,
-    color: colors.gray,
-    fontFamily: fonts.regular,
-  },
-  socialLoginContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  socialButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.gray50,
-    borderRadius: 12,
-    paddingVertical: 14,
-    marginHorizontal: 4,
-  },
-  socialLogo: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-  },
-  socialButtonText: {
-    fontSize: 14,
-    color: colors.black,
-    fontFamily: fonts.bold,
-  },
-  termsText: {
-    fontSize: 12,
-    color: colors.gray,
-    textAlign: 'center',
-    lineHeight: 18,
-    fontFamily: fonts.regular,
-  },
-  linkText: {
-    color: colors.primaryRed,
-    textDecorationLine: 'underline',
-    fontFamily: fonts.bold,
-  },
-  errorText: {
-    color: colors.primaryRed,
-    fontSize: 13,
-    marginBottom: 8,
-    fontFamily: fonts.regular,
-  },
-});
+  safeArea: { flex: 1, backgroundColor: colors.primaryRed },
+  loginContainer: { width: "100%", height: "auto", gap: 10 },
+  formContainer: { flex: 1, backgroundColor: colors.white, paddingHorizontal: 20, paddingVertical: 20 },
+  scrollContent: { padding: 20 },
+  input: { backgroundColor: colors.white, borderWidth: 1, borderColor: colors.gray50, borderRadius: 12, paddingVertical: 13, paddingHorizontal: 16, fontSize: 16, marginBottom: 10, color: colors.black, fontFamily: fonts.regular },
+  passwordContainer: { flexDirection: "row", alignItems: "center", backgroundColor: colors.white, borderWidth: 1, borderColor: colors.gray50, borderRadius: 12, paddingHorizontal: 16, marginBottom: 10 },
+  inputPassword: { flex: 1, paddingVertical: 13, fontSize: 16, color: colors.black, fontFamily: fonts.regular },
+  forgotPasswordText: { fontSize: 14, color: colors.primaryRed, textAlign: "right", marginBottom: 14, fontFamily: fonts.bold },
+  loginButton: { flexDirection: "row", justifyContent: "center", alignItems: "center", backgroundColor: colors.primaryRed, borderRadius: 12, paddingVertical: 14, marginBottom: 16, gap: "60%" },
+  loginButtonText: { color: colors.white, fontSize: 16, fontFamily: fonts.bold, marginRight: 8 },
+  dividerContainer: { flexDirection: "row", alignItems: "center", marginBottom: 16 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: colors.gray50 },
+  dividerText: { marginHorizontal: 16, fontSize: 12, color: colors.gray, fontFamily: fonts.regular },
+  socialLoginContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 16 },
+  socialButton: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: colors.gray50, borderRadius: 12, paddingVertical: 14, marginHorizontal: 4 },
+  socialLogo: { width: 20, height: 20, marginRight: 10 },
+  socialButtonText: { fontSize: 14, color: colors.black, fontFamily: fonts.bold },
+  termsText: { fontSize: 12, color: colors.gray, textAlign: "center", lineHeight: 18, fontFamily: fonts.regular },
+  linkText: { color: colors.primaryRed, textDecorationLine: "underline", fontFamily: fonts.bold },
+})
 
-export default LoginScreen;
-
+export default LoginScreen
