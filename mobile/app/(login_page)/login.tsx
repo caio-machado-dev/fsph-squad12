@@ -1,4 +1,4 @@
-import * as Google from 'expo-auth-session/providers/google';
+import { useIdTokenAuthRequest } from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import Constants from 'expo-constants';
 import { Feather } from "@expo/vector-icons"
@@ -18,7 +18,6 @@ import {
 } from "react-native"
 import { getLogin } from "./auth"
 
-// Paleta de Cores
 const colors = {
   primaryRed: "#D32F2F",
   black: "#1E1E1E",
@@ -33,7 +32,6 @@ const fonts = {
   bold: "Roboto-Bold",
 }
 
-// Assets
 const googleLogo: ImageSourcePropType = require("../../assets/images/google-logo.png")
 const facebookLogo: ImageSourcePropType = require("../../assets/images/facebook-logo.png")
 
@@ -54,35 +52,51 @@ const LoginScreen = () => {
     }
   }
 
-  // Configuração do Google Auth
   WebBrowser.maybeCompleteAuthSession();
 
-  const webClientId = Constants.expoConfig?.extra?.GOOGLE_WEB_CLIENT_ID || '186834080659-bvsr5g2ocvu78j8dq2sa8oj6kdm0nbn2.apps.googleusercontent.com';
+  const webClientId = Constants.expoConfig?.extra?.GOOGLE_WEB_CLIENT_ID || 
+    '186834080659-bvsr5g2ocvu78j8dq2sa8oj6kdm0nbn2.apps.googleusercontent.com';
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
+  const [request, response, promptAsync] = useIdTokenAuthRequest({
     webClientId,
+    scopes: ['openid', 'profile', 'email'],
   });
 
-  // Captura o resultado do login Google
   useEffect(() => {
-    if (response?.type === 'success') {
-      const { authentication } = response;
-      console.log('✅ Login Google bem-sucedido', authentication);
+    if (response?.type === "success") {
+      const idToken = response.params?.id_token;
 
-      // Aqui você pode enviar o token para o backend
-      // fetch('http://localhost:3000/auth/google', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ token: authentication.accessToken }),
-      // });
+      if (!idToken) {
+        alert("Erro de autenticação: O idToken do Google é obrigatório.");
+        return;
+      }
 
-      router.replace('/(home_page)/home_page');
+      console.log("✅ Login Google bem-sucedido:", idToken);
+
+      // Troque "localhost" pelo IP da sua máquina caso seja testando no celular
+      fetch("http://localhost:3000/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      })
+        .then(async (res) => {
+          const data = await res.json();
+          if (res.ok && data.token) {
+            console.log("✅ Login backend:", data);
+            router.replace("/(home_page)/home_page");
+          } else {
+            alert(`Erro de autenticação: ${data.error || "Desconhecido"}`);
+          }
+        })
+        .catch((err) => {
+          console.error("Erro no fetch:", err);
+          alert("Erro ao conectar ao servidor de autenticação. Verifique o IP.");
+        });
     }
   }, [response]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Formulário de Login */}
       <View style={styles.formContainer}>
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -168,175 +182,25 @@ const LoginScreen = () => {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.primaryRed,
-  },
-  header: {
-    paddingHorizontal: "8%",
-    paddingTop: "45%",
-    paddingBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 32,
-    color: colors.white,
-    fontFamily: fonts.regular,
-    lineHeight: 31,
-  },
-  loginContainer: {
-    width: "100%",
-    height: "auto",
-    gap: 10,
-  },
-  formContainer: {
-    flex: 1,
-    backgroundColor: colors.white,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-  },
-  scrollContent: {
-    padding: 20,
-  },
-  tabSelector: {
-    flexDirection: "row",
-    backgroundColor: colors.gray10,
-    borderRadius: 99,
-    padding: 4,
-    marginBottom: 16,
-  },
-  tabInactive: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: "center",
-  },
-  tabActive: {
-    flex: 1,
-    backgroundColor: colors.white,
-    borderRadius: 99,
-    paddingVertical: 10,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
-  },
-  tabTextInactive: {
-    fontSize: 14,
-    color: colors.gray,
-    fontFamily: fonts.regular,
-  },
-  tabTextActive: {
-    fontSize: 14,
-    color: colors.black,
-    fontFamily: fonts.bold,
-  },
-  input: {
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.gray50,
-    borderRadius: 12,
-    paddingVertical: 13,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    marginBottom: 10,
-    color: colors.black,
-    fontFamily: fonts.regular,
-  },
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.gray50,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    marginBottom: 10,
-  },
-  inputPassword: {
-    flex: 1,
-    paddingVertical: 13,
-    fontSize: 16,
-    color: colors.black,
-    fontFamily: fonts.regular,
-  },
-  forgotPasswordText: {
-    fontSize: 14,
-    color: colors.primaryRed,
-    textAlign: "right",
-    marginBottom: 14,
-    fontFamily: fonts.bold,
-  },
-  loginButton: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.primaryRed,
-    borderRadius: 12,
-    paddingVertical: 14,
-    marginBottom: 16,
-    gap: "60%",
-  },
-  loginButtonText: {
-    color: colors.white,
-    fontSize: 16,
-    fontFamily: fonts.bold,
-    marginRight: 8,
-  },
-  dividerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.gray50,
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    fontSize: 12,
-    color: colors.gray,
-    fontFamily: fonts.regular,
-  },
-  socialLoginContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  socialButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: colors.gray50,
-    borderRadius: 12,
-    paddingVertical: 14,
-    marginHorizontal: 4,
-  },
-  socialLogo: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-  },
-  socialButtonText: {
-    fontSize: 14,
-    color: colors.black,
-    fontFamily: fonts.bold,
-  },
-  termsText: {
-    fontSize: 12,
-    color: colors.gray,
-    textAlign: "center",
-    lineHeight: 18,
-    fontFamily: fonts.regular,
-  },
-  linkText: {
-    color: colors.primaryRed,
-    textDecorationLine: "underline",
-    fontFamily: fonts.bold,
-  },
+  safeArea: { flex: 1, backgroundColor: colors.primaryRed },
+  loginContainer: { width: "100%", height: "auto", gap: 10 },
+  formContainer: { flex: 1, backgroundColor: colors.white, paddingHorizontal: 20, paddingVertical: 20 },
+  scrollContent: { padding: 20 },
+  input: { backgroundColor: colors.white, borderWidth: 1, borderColor: colors.gray50, borderRadius: 12, paddingVertical: 13, paddingHorizontal: 16, fontSize: 16, marginBottom: 10, color: colors.black, fontFamily: fonts.regular },
+  passwordContainer: { flexDirection: "row", alignItems: "center", backgroundColor: colors.white, borderWidth: 1, borderColor: colors.gray50, borderRadius: 12, paddingHorizontal: 16, marginBottom: 10 },
+  inputPassword: { flex: 1, paddingVertical: 13, fontSize: 16, color: colors.black, fontFamily: fonts.regular },
+  forgotPasswordText: { fontSize: 14, color: colors.primaryRed, textAlign: "right", marginBottom: 14, fontFamily: fonts.bold },
+  loginButton: { flexDirection: "row", justifyContent: "center", alignItems: "center", backgroundColor: colors.primaryRed, borderRadius: 12, paddingVertical: 14, marginBottom: 16, gap: "60%" },
+  loginButtonText: { color: colors.white, fontSize: 16, fontFamily: fonts.bold, marginRight: 8 },
+  dividerContainer: { flexDirection: "row", alignItems: "center", marginBottom: 16 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: colors.gray50 },
+  dividerText: { marginHorizontal: 16, fontSize: 12, color: colors.gray, fontFamily: fonts.regular },
+  socialLoginContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 16 },
+  socialButton: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: colors.gray50, borderRadius: 12, paddingVertical: 14, marginHorizontal: 4 },
+  socialLogo: { width: 20, height: 20, marginRight: 10 },
+  socialButtonText: { fontSize: 14, color: colors.black, fontFamily: fonts.bold },
+  termsText: { fontSize: 12, color: colors.gray, textAlign: "center", lineHeight: 18, fontFamily: fonts.regular },
+  linkText: { color: colors.primaryRed, textDecorationLine: "underline", fontFamily: fonts.bold },
 })
 
 export default LoginScreen
