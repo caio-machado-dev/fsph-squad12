@@ -1,31 +1,15 @@
-import mysql from "mysql2/promise";
+import { getConnection } from "../config/database.js";
 import fs from "fs";
 import path from "path";
 import "dotenv/config";
 
 // ====================== CONFIGURAÇÕES ======================
-const DB_CONFIG = {
-  host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASS || "chatbot",
-  database: process.env.DB_NAME || "fsphemo_db",
-};
-
 const API_URL = "https://api.fsph.se.gov.br/apiinterface/estoque";
 const SAVE_PATH = path.join(process.cwd(), "estoque.json");
 // Intervalo de atualização em milissegundos (6 horas)
 const UPDATE_INTERVAL = 6 * 60 * 60 * 1000;
 const SAVE_LOCAL = (process.env.SAVE_LOCAL || 'false').toLowerCase() === 'true';
 // ============================================================
-
-// Garante que o banco exista
-async function ensureDatabaseExists() {
-  const { host, user, password, database } = DB_CONFIG;
-  const connection = await mysql.createConnection({ host, user, password });
-  await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`);
-  console.log(`Banco de dados '${database}' verificado/criado com sucesso.`);
-  await connection.end();
-}
 
 // Garante que a tabela exista
 async function ensureTableExists(connection) {
@@ -46,8 +30,7 @@ async function ensureTableExists(connection) {
 
 // Insere ou atualiza os dados
 async function inserirDados(dados) {
-  await ensureDatabaseExists();
-  const connection = await mysql.createConnection(DB_CONFIG);
+  const connection = await getConnection();
   await ensureTableExists(connection);
 
   try {
