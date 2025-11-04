@@ -4,7 +4,7 @@ import { useRouter } from "expo-router"
 import * as React from "react"
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { shadows } from "./shadow"
+import { shadows } from "./_shadow"
 
 export default function Frame116() {
   const router = useRouter()

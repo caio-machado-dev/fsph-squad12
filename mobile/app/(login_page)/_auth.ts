@@ -1,5 +1,5 @@
 // validação simples de email/senha
-import { validateCredentials } from "./credentials"
+import { validateCredentials } from "./_credentials"
 
 export type GetLoginParams = {
   email: string

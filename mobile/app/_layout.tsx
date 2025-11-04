@@ -14,12 +14,7 @@ import Constants from 'expo-constants';
 WebBrowser.maybeCompleteAuthSession();
 
 // Carrega variáveis de ambiente do app.json
-const { manifest } = Constants;
-const extra = manifest?.extra || {};
-
-process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID = extra.GOOGLE_ANDROID_CLIENT_ID;
-process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID = extra.GOOGLE_IOS_CLIENT_ID;
-process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID = extra.GOOGLE_WEB_CLIENT_ID;
+const extra = Constants.expoConfig?.extra || {};
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -27,9 +22,9 @@ export default function RootLayout() {
 
   // Configuração da autenticação Google
   const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    androidClientId: extra.GOOGLE_ANDROID_CLIENT_ID,
+    iosClientId: extra.GOOGLE_IOS_CLIENT_ID,
+    webClientId: extra.GOOGLE_WEB_CLIENT_ID,
   });
 
   const [loaded] = useFonts({

@@ -52,7 +52,7 @@
   "author": "FSPH Squad 12",
   "license": "MIT",
   "dependencies": {
-    "expo": "^54.0.13",
+    "expo": "~54.0.0",
     "google-auth-library": "^10.5.0",
     "jsonwebtoken": "^9.0.2"
   }
