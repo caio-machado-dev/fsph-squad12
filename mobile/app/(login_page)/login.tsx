@@ -16,7 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import { getLogin } from "./auth"
+import { getLogin } from "./_auth"
 
 const colors = {
   primaryRed: "#D32F2F",
@@ -54,11 +54,18 @@ const LoginScreen = () => {
 
   WebBrowser.maybeCompleteAuthSession();
 
-  const webClientId = Constants.expoConfig?.extra?.GOOGLE_WEB_CLIENT_ID || 
+  const extra = Constants.expoConfig?.extra || {};
+  const webClientId = extra.GOOGLE_WEB_CLIENT_ID ||
+    '186834080659-bvsr5g2ocvu78j8dq2sa8oj6kdm0nbn2.apps.googleusercontent.com';
+  const androidClientId = extra.GOOGLE_ANDROID_CLIENT_ID ||
+    '186834080659-bvsr5g2ocvu78j8dq2sa8oj6kdm0nbn2.apps.googleusercontent.com';
+  const iosClientId = extra.GOOGLE_IOS_CLIENT_ID ||
     '186834080659-bvsr5g2ocvu78j8dq2sa8oj6kdm0nbn2.apps.googleusercontent.com';
 
   const [request, response, promptAsync] = useIdTokenAuthRequest({
     webClientId,
+    androidClientId,
+    iosClientId,
     scopes: ['openid', 'profile', 'email'],
   });
 
