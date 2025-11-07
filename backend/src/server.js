@@ -6,8 +6,6 @@ import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
 import path from "path";
-import session from "express-session";
-import passport from "passport";
 
 // Carrega variáveis do .env
 dotenv.config();
@@ -24,22 +22,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ==========================
-// CONFIGURAÇÃO DE SESSÃO
-// ==========================
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "secret_key_default",
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: process.env.NODE_ENV === "production" },
-  })
-);
-
-// Inicializa Passport (autenticação)
-app.use(passport.initialize());
-app.use(passport.session());
-
-// ==========================
 // ROTA DE VERIFICAÇÃO
 // ==========================
 app.get("/health", (req, res) => {
@@ -51,9 +33,11 @@ app.get("/health", (req, res) => {
 // ==========================
 import routes from "./routes/index.js";
 import authRoutes from "./routes/auth.js";
+import userRoutes from "./routes/user.js";
 
 app.use("/api", routes);
 app.use("/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 // ==========================
 // MIDDLEWARE GLOBAL DE ERRO
