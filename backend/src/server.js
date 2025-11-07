@@ -34,10 +34,12 @@ app.get("/health", (req, res) => {
 import routes from "./routes/index.js";
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
+import estoqueRoutes from "./routes/estoque.js";
 
 app.use("/api", routes);
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/estoque", estoqueRoutes);
 
 // ==========================
 // MIDDLEWARE GLOBAL DE ERRO
