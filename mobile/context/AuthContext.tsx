@@ -5,9 +5,9 @@ import { useRouter } from "expo-router";
 // Tipos de dados do usuário e do contexto
 interface User {
   id: number;
-  nome: string;
+  nome_completo: string;
   email: string;
-  foto?: string;
+  foto_perfil?: string;
 }
 
 interface AuthContextData {

@@ -35,11 +35,17 @@ import routes from "./routes/index.js";
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
 import estoqueRoutes from "./routes/estoque.js";
+import profileRoutes from "./routes/profile.js";
+import postsRoutes from "./routes/posts.js";
+import campaignsRoutes from "./routes/campaigns.js";
 
 app.use("/api", routes);
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/estoque", estoqueRoutes);
+app.use("/api/profile", profileRoutes);
+app.use("/api/posts", postsRoutes);
+app.use("/api/campaigns", campaignsRoutes);
 
 // ==========================
 // MIDDLEWARE GLOBAL DE ERRO
