@@ -1,7 +1,11 @@
 import { Feather } from "@expo/vector-icons"
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import Constants from 'expo-constants';
 import { Stack, useRouter } from "expo-router"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import {
+  ActivityIndicator,
   Image,
   ImageSourcePropType,
   SafeAreaView,
@@ -13,10 +17,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
+import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
-export function getServerSideProps() {
-  console.log("SSR redirect to / (login_page)/splash")
-}
+WebBrowser.maybeCompleteAuthSession();
 
 // Cores a serem usadas
 const colors = {
@@ -37,14 +41,74 @@ const fonts = {
 const googleLogo: ImageSourcePropType = require("@/assets/images/google-logo.png")
 const facebookLogo: ImageSourcePropType = require("@/assets/images/facebook-logo.png")
 
+const API_URL = "http://localhost:3000";
+
 const CadastroScreen = () => {
-  const router = useRouter()
-  const [nome, setNome] = useState("")
-  const [email, setEmail] = useState("")
-  const [senha, setSenha] = useState("")
-  const [confirmarSenha, setConfirmarSenha] = useState("")
-  const [isSenhaVisible, setIsSenhaVisible] = useState(false)
-  const [isConfirmarSenhaVisible, setIsConfirmarSenhaVisible] = useState(false)
+  const router = useRouter();
+  const { signIn } = useAuth();
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [isSenhaVisible, setIsSenhaVisible] = useState(false);
+  const [isConfirmarSenhaVisible, setIsConfirmarSenhaVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const extra = Constants.expoConfig?.extra || {};
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    webClientId: extra.GOOGLE_WEB_CLIENT_ID,
+    androidClientId: extra.GOOGLE_ANDROID_CLIENT_ID,
+    iosClientId: extra.GOOGLE_IOS_CLIENT_ID,
+  });
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      const { id_token } = response.params;
+      handleGoogleSignIn(id_token);
+    }
+  }, [response]);
+
+  const handleGoogleSignIn = async (idToken: string) => {
+    setLoading(true);
+    try {
+      const res = await axios.post(`${API_URL}/auth/google`, { idToken });
+      if (res.data.token && res.data.user) {
+        await signIn(res.data.token, res.data.user);
+      } else {
+        alert("Erro de autenticação: Resposta inválida do servidor.");
+      }
+    } catch (error: any) {
+      console.error("Erro no login com Google:", error.response?.data || error.message);
+      alert(`Erro no login com Google: ${error.response?.data?.error || "Verifique sua conexão."}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  async function handleRegister() {
+    if (senha !== confirmarSenha) {
+      alert("As senhas não coincidem.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await axios.post(`${API_URL}/auth/register`, {
+        nome_completo: nome,
+        email,
+        senha,
+      });
+      if (res.data.token && res.data.user) {
+        await signIn(res.data.token, res.data.user);
+      } else {
+        alert("Erro no cadastro: Resposta inválida do servidor.");
+      }
+    } catch (error: any) {
+      console.error("Erro no cadastro:", error.response?.data || error.message);
+      alert(`Erro no cadastro: ${error.response?.data?.error || "Verifique seus dados."}`);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -122,9 +186,15 @@ const CadastroScreen = () => {
           <TouchableOpacity
             style={styles.createAccountButton}
             activeOpacity={0.8}
+            onPress={handleRegister}
+            disabled={loading}
           >
-            <Text style={styles.createAccountButtonText}>Criar conta</Text>
-            <Feather name="arrow-up-right" size={20} color={colors.white} />
+            {loading ? <ActivityIndicator color={colors.white} /> : (
+              <>
+                <Text style={styles.createAccountButtonText}>Criar conta</Text>
+                <Feather name="arrow-up-right" size={20} color={colors.white} />
+              </>
+            )}
           </TouchableOpacity>
 
           <View style={styles.dividerContainer}>
@@ -134,7 +204,7 @@ const CadastroScreen = () => {
           </View>
 
           <View style={styles.socialLoginContainer}>
-            <TouchableOpacity style={styles.socialButton}>
+            <TouchableOpacity style={styles.socialButton} onPress={() => promptAsync()} disabled={!request || loading}>
               <Image source={googleLogo} style={styles.socialLogo} />
               <Text style={styles.socialButtonText}>Google</Text>
             </TouchableOpacity>
