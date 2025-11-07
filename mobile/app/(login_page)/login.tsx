@@ -14,9 +14,9 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from "react-nativ";
+} from "react-native";
 import axios from 'axios';
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from '../../context/AuthContext';
 
 // Configuração do WebBrowser
 WebBrowser.maybeCompleteAuthSession();

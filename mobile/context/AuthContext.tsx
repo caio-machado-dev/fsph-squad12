@@ -1,8 +1,8 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import * as SecureStore from 'expo-secure-store';
-import { useRouter, useSegments } from 'expo-router';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import * as SecureStore from "expo-secure-store";
+import { useRouter } from "expo-router";
 
-// Define o tipo para os dados do usuário e do contexto
+// Tipos de dados do usuário e do contexto
 interface User {
   id: number;
   nome: string;
@@ -14,56 +14,68 @@ interface AuthContextData {
   user: User | null;
   token: string | null;
   signIn: (token: string, userData: User) => Promise<void>;
-  signOut: () => void;
+  signOut: () => Promise<void>;
   isLoading: boolean;
 }
 
-// Cria o contexto com um valor padrão
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
-// Hook customizado para usar o contexto de autenticação
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => useContext(AuthContext);
 
-// Componente Provedor do Contexto
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
-  // Efeito para carregar o token/usuário do armazenamento seguro na inicialização
+  // Carrega dados de autenticação apenas uma vez (sem loop!)
   useEffect(() => {
-    async function loadAuthData() {
+    const loadAuthData = async () => {
       try {
-        const storedToken = await SecureStore.getItemAsync('authToken');
-        const storedUser = await SecureStore.getItemAsync('authUser');
+        const storedToken = await SecureStore.getItemAsync("authToken");
+        const storedUser = await SecureStore.getItemAsync("authUser");
 
         if (storedToken && storedUser) {
           setToken(storedToken);
           setUser(JSON.parse(storedUser));
         }
-      } catch (e) {
-        console.error('Falha ao carregar dados de autenticação', e);
+      } catch (error) {
+        console.error("Erro ao carregar dados de autenticação:", error);
       } finally {
         setIsLoading(false);
       }
-    }
+    };
+
     loadAuthData();
   }, []);
 
+  // Função de login
   const signIn = async (newToken: string, userData: User) => {
-    setToken(newToken);
-    setUser(userData);
-    await SecureStore.setItemAsync('authToken', newToken);
-    await SecureStore.setItemAsync('authUser', JSON.stringify(userData));
+    try {
+      setToken(newToken);
+      setUser(userData);
+      await SecureStore.setItemAsync("authToken", newToken);
+      await SecureStore.setItemAsync("authUser", JSON.stringify(userData));
+
+      // Redireciona após login
+      router.replace("/(home_page)/profile_page");
+    } catch (error) {
+      console.error("Erro no signIn:", error);
+    }
   };
 
+  // Função de logout
   const signOut = async () => {
-    setToken(null);
-    setUser(null);
-    await SecureStore.deleteItemAsync('authToken');
-    await SecureStore.deleteItemAsync('authUser');
+    try {
+      setToken(null);
+      setUser(null);
+      await SecureStore.deleteItemAsync("authToken");
+      await SecureStore.deleteItemAsync("authUser");
+
+      router.replace("/(login_page)/login");
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    }
   };
 
   return (

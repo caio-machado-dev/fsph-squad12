@@ -15,7 +15,7 @@ import {
   View,
   Platform,
 } from 'react-native';
-import { useAuth } from '../../../context/AuthContext'; // Importar o useAuth
+import { useAuth } from '../../context/AuthContext'; // Importar o useAuth
 
 const defaultAvatar = require('../../assets/images/default-avatar.png');
 const appLogo = require('../../assets/images/logo.png');

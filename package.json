@@ -53,6 +53,7 @@
   "license": "MIT",
   "dependencies": {
     "expo": "~54.0.0",
+    "expo-secure-store": "~15.0.7",
     "google-auth-library": "^10.5.0",
     "jsonwebtoken": "^9.0.2"
   }
