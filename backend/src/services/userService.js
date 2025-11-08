@@ -66,7 +66,7 @@ async function createUser(userData) {
     console.error("Erro ao criar usuário:", error);
     throw error;
   } finally {
-    if (connection) connection.release();
+    if (connection) await connection.end();
   }
 }
 
@@ -82,7 +82,7 @@ async function findUserByEmail(email) {
     console.error("Erro ao buscar usuário por email:", error);
     throw error;
   } finally {
-    if (connection) connection.release();
+    if (connection) await connection.end();
   }
 }
 
@@ -98,16 +98,19 @@ async function findUserById(id) {
     console.error("Erro ao buscar usuário por ID:", error);
     throw error;
   } finally {
-    if (connection) connection.release();
+    if (connection) await connection.end();
   }
 }
 
 async function updateUserById(id, updateData) {
-  const connection = await getConnection();
+  let connection; // Declarado aqui para ser acessível no finally
   try {
+    connection = await getConnection();
     // Garante que o objeto de atualização não esteja vazio
     if (Object.keys(updateData).length === 0) {
-      return findUserById(id); // Retorna o usuário sem alterações
+      // Reutiliza a conexão existente para buscar o usuário
+      const [rows] = await connection.query("SELECT * FROM usuarios WHERE id_usuario = ?", [id]);
+      return rows.length > 0 ? rows[0] : null;
     }
 
     await connection.query("UPDATE usuarios SET ? WHERE id_usuario = ?", [
@@ -115,13 +118,14 @@ async function updateUserById(id, updateData) {
       id,
     ]);
 
-    // Retorna o usuário atualizado
-    return findUserById(id);
+    // Reutiliza a conexão para buscar o usuário atualizado
+    const [rows] = await connection.query("SELECT * FROM usuarios WHERE id_usuario = ?", [id]);
+    return rows.length > 0 ? rows[0] : null;
   } catch (error) {
     console.error("Erro ao atualizar usuário por ID:", error);
     throw error;
   } finally {
-    if (connection) connection.release();
+    if (connection) await connection.end();
   }
 }
 
