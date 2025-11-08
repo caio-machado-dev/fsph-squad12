@@ -14,6 +14,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Platform,
 } from "react-native";
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
@@ -30,8 +31,8 @@ const fonts = { regular: "Roboto-Regular", bold: "Roboto-Bold" };
 const googleLogo: ImageSourcePropType = require("../../assets/images/google-logo.png");
 const facebookLogo: ImageSourcePropType = require("../../assets/images/facebook-logo.png");
 
-// URL do Backend - Troque pelo seu IP se estiver testando em um dispositivo físico
-const API_URL = "http://localhost:3000";
+// URL do Backend - Usa o IP correto para o emulador Android
+const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
 
 const LoginScreen = () => {
   const { signIn } = useAuth();

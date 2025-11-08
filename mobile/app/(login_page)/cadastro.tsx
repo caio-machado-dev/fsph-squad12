@@ -16,6 +16,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Platform,
 } from "react-native"
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
@@ -41,7 +42,7 @@ const fonts = {
 const googleLogo: ImageSourcePropType = require("@/assets/images/google-logo.png")
 const facebookLogo: ImageSourcePropType = require("@/assets/images/facebook-logo.png")
 
-const API_URL = "http://localhost:3000";
+const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
 
 const CadastroScreen = () => {
   const router = useRouter();
