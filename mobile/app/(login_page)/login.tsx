@@ -3,6 +3,9 @@ import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import Constants from 'expo-constants';
 import React, { useState, useEffect } from "react";
+// Importação do _credentials não é usada nesta tela, mas pode deixar
+import { validateCredentials } from "../lib/_credentials"; 
+
 import {
   ActivityIndicator,
   Image,
@@ -57,7 +60,7 @@ const LoginScreen = () => {
     }
   }, [response]);
 
-  // Função para login com Google
+  // Função para login com Google (esta ainda vai tentar o login real)
   const handleGoogleSignIn = async (idToken: string) => {
     setLoading(true);
     try {
@@ -76,9 +79,48 @@ const LoginScreen = () => {
     }
   };
 
-  // Função para login tradicional
+  // #################################################################
+  // ## FUNÇÃO DE LOGIN MANUAL ATUALIZADA (COM GAMBIARRA) ##
+  // #################################################################
   async function handleSubmit() {
     setLoading(true);
+
+    // --- INÍCIO DA GAMBIARRA (MODO DEV) ---
+    // Este código "finge" o login para o front-end poder trabalhar.
+    // Ele aceita qualquer e-mail ou senha e loga um usuário de teste.
+    try {
+      // 1. Simula um atraso de rede (para o loading aparecer)
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // 2. Cria um usuário falso (pode mudar o nome se quiser)
+      const usuarioFalso = { 
+        id: 1, 
+        nome_completo: "Usuário de Teste (DEV)", 
+        email: email || "teste@dev.com" // Usa o email digitado, ou um padrão
+      };
+      
+      // 3. Chama o signIn (que foi pego do useAuth)
+      //    Isso AINDA VAI FALHAR se o 'signIn' for 'undefined' (o outro erro)
+      await signIn("token_falso_de_desenvolvimento", usuarioFalso);
+
+      // 4. O redirecionamento é feito automaticamente pelo _layout.tsx
+      //    quando o 'user' no AuthContext muda.
+
+    } catch (e: any) {
+      // Se o PRÓPRIO signIn falhar (como 'signIn is not a function')
+      console.error("Erro no login falso:", e);
+      alert(`Erro ao tentar o login falso: ${e.message}`);
+    } finally {
+      setLoading(false);
+    }
+    
+    return; // Impede que o código original abaixo seja executado
+    // --- FIM DA GAMBIARRA ---
+
+
+    /* // =================================================================
+    // == O CÓDIGO ORIGINAL (QUE FUNCIONA) ESTÁ COMENTADO ABAIXO: ==
+    // =================================================================
     try {
       const res = await axios.post(`${API_URL}/auth/login`, { email, senha });
       if (res.data.token && res.data.user) {
@@ -92,7 +134,11 @@ const LoginScreen = () => {
     } finally {
       setLoading(false);
     }
+    */
   }
+  // #################################################################
+  // ## FIM DA FUNÇÃO ATUALIZADA ##
+  // #################################################################
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -143,6 +189,7 @@ const LoginScreen = () => {
   );
 };
 
+// ... (seus estilos continuam aqui embaixo, sem mudança)
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.primaryRed },
   loginContainer: { width: "100%", height: "auto", gap: 10 },

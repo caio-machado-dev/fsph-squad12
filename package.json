@@ -27,7 +27,9 @@
     "test": "npm run test:backend",
     "test:backend": "cd backend && npm run test",
     "dev": "concurrently \"npm run backend:dev\" \"npm run mobile:dev\"",
-    "clean": "rm -rf node_modules mobile/node_modules backend/node_modules shared/node_modules"
+    "clean": "rm -rf node_modules mobile/node_modules backend/node_modules shared/node_modules",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "devDependencies": {
     "@types/react": "~19.0.10",
@@ -58,6 +60,8 @@
     "expo": "~54.0.0",
     "expo-secure-store": "~15.0.7",
     "google-auth-library": "^10.5.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "react": "19.1.0",
+    "react-native": "0.81.5"
   }
 }

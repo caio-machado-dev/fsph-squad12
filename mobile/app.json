@@ -13,9 +13,9 @@
       "supportsTablet": true
     },
     "extra": {
-      "GOOGLE_WEB_CLIENT_ID": "SEU_CLIENT_ID_WEB_AQUI",
-      "GOOGLE_ANDROID_CLIENT_ID": "SEU_CLIENT_ID_ANDROID_AQUI",
-      "GOOGLE_IOS_CLIENT_ID": "SEU_CLIENT_ID_IOS_AQUI"
+      "GOOGLE_WEB_CLIENT_ID": "186834080659-bvsr5g2ocvu78j8dq2sa8oj6kdm0nbn2.apps.googleusercontent.com",
+      "GOOGLE_ANDROID_CLIENT_ID": "186834080659-bvsr5g2ocvu78j8dq2sa8oj6kdm0nbn2.apps.googleusercontent.com",
+      "GOOGLE_IOS_CLIENT_ID": "186834080659-bvsr5g2ocvu78j8dq2sa8oj6kdm0nbn2.apps.googleusercontent.com"
     },
     "android": {
       "adaptiveIcon": {

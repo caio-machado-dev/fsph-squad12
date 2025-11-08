@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import * as SecureStore from "expo-secure-store";
-import { useRouter } from "expo-router";
+// import { useRouter } from "expo-router"; // <--- REMOVIDO
 
 // Tipos de dados do usuário e do contexto
 interface User {
@@ -26,7 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
+  // const router = useRouter(); // <--- REMOVIDO
 
   // Carrega dados de autenticação apenas uma vez (sem loop!)
   useEffect(() => {
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await SecureStore.setItemAsync("authUser", JSON.stringify(userData));
 
       // Redireciona após login
-      router.replace("/(home_page)/profile_page");
+      // router.replace("/(home_page)/profile_page"); // <--- REMOVIDO
     } catch (error) {
       console.error("Erro no signIn:", error);
     }
@@ -72,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await SecureStore.deleteItemAsync("authToken");
       await SecureStore.deleteItemAsync("authUser");
 
-      router.replace("/(login_page)/login");
+      // router.replace("/(login_page)/login"); // <--- REMOVIDO
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     }

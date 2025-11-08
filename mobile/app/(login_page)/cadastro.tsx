@@ -4,6 +4,8 @@ import * as WebBrowser from 'expo-web-browser';
 import Constants from 'expo-constants';
 import { Stack, useRouter } from "expo-router"
 import React, { useState, useEffect } from "react"
+// Novo (Certo)
+import { validateCredentials } from "../lib/_credentials";
 import {
   ActivityIndicator,
   Image,
