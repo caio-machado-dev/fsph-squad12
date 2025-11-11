@@ -1,8 +1,8 @@
 import { ThemedText } from "@/components/ThemedText"
-import { FontAwesome, FontAwesome6 } from "@expo/vector-icons"
+import { FontAwesome, FontAwesome6, EvilIcons, FontAwesome5, Ionicons } from "@expo/vector-icons"
 import { useRouter } from "expo-router"
 import * as React from "react"
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Alert, StyleSheet, Text, TouchableOpacity, View, StatusBar, ScrollView } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { shadows } from "./_shadow"
 
@@ -45,6 +45,7 @@ export default function Frame116() {
 
   return (
     <SafeAreaView style={styles.parent}>
+      <StatusBar barStyle="dark-content"/>
       {/* Profile header: foto e nome do usuário */}
       <View style={styles.profileContainer}>
         <TouchableOpacity
@@ -65,6 +66,8 @@ export default function Frame116() {
           <ThemedText style={styles.profileName}>Usuário</ThemedText>
         </View>
       </View>
+
+      {/* Estoque de sangue */}
       <View style={[styles.view, styles.viewFlexBox]}>
         <View style={[styles.frameParent, shadows.xl]}>
           <View style={styles.vidasHumanasPrecisamDeVocWrapper}>
@@ -127,6 +130,7 @@ export default function Frame116() {
             </View>
           </View>
         </View>
+
         {/* Agendamentos */}
         <View style={styles.scheduleContainer}>
           <View style={styles.card}>
@@ -143,13 +147,68 @@ export default function Frame116() {
                 style={styles.cardButton}
                 onPress={() => {
                   console.log("navegando para scheduling")
-                  router.push("/(second_page)/scheduling" as any)
+                  router.push("/(others_page)/scheduling" as any)
                 }}
                 activeOpacity={0.9}
               >
                 <Text style={styles.cardButtonText}>Agendar</Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+
+        {/* Seu Impacto */}
+        <View style={styles.impactContainer}>
+          <Text style={styles.impactHeader}>Seu Impacto</Text>
+          <View style={styles.impactRow}>
+              <TouchableOpacity
+                style={[styles.statCard, shadows.md]}
+                activeOpacity={0.9}
+                onPress={() => router.push('/history' as any)}
+              >
+                <View style={styles.statTopRowSmall}>
+                  <View style={{ alignItems: 'center' }}>
+                    <Text style={styles.statNumber}>2</Text>
+                    <Text style={styles.statSeparator}>Doações</Text>
+                  </View>
+                  <View style={{ alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                      <FontAwesome5 name="heartbeat" size={22} color="#d32f2f" />
+                      <Text style={styles.statNumber}>8</Text>
+                    </View>
+                    <Text style={styles.statSeparator}>Vidas salvas</Text>
+                  </View>
+                </View>
+                <View style={styles.statFooterSmall}>
+                  <Text style={styles.statAction}>Acessar histórico</Text>
+                  <EvilIcons name="chevron-right" size={30} color="#cfcfcf" />
+                </View>
+              </TouchableOpacity>
+
+            {/* <TouchableOpacity
+              style={[styles.statCard, shadows.md]}
+              activeOpacity={0.9}
+              onPress={() => router.push('/(home_page)/ranking_page' as any)}
+            >
+              <View style={styles.statTopRow}>
+                <View style={{ alignItems: 'center', height: 100, backgroundColor: '#db9b9bff' }}>
+                  <Ionicons name="trophy-outline" size={28} color="#b71c1c" />
+                </View>
+                <View>
+                  <View style={{ marginLeft: 10, flex: 1 }}>
+                    <Text style={styles.statSmallTitle}>Vamos lá!</Text>
+                    <Text style={styles.statSmallSubtitle}>Seja uma <Text style={{fontWeight: '700'}}>heroína</Text>{'\n'}E salve mais uma vida.</Text>
+                  </View>
+                  <View style={styles.progressBar}>
+                    <View style={styles.progressFill} />
+                </View>
+                </View>
+              </View>
+              <View style={styles.statFooterSmall}>
+                <Text style={styles.statAction}>Ranking</Text>
+                <EvilIcons name="chevron-right" size={30} color="#cfcfcf" />
+              </View>
+            </TouchableOpacity> */}
           </View>
         </View>
       </View>
@@ -160,7 +219,7 @@ export default function Frame116() {
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    //backgroundColor: "#c2ababff",
+    backgroundColor: "#ffff",
   },
   line: {
     borderBlockColor: "#ccc",
@@ -210,7 +269,7 @@ const styles = StyleSheet.create({
     height: 12,
     flexDirection: "column",
     overflow: "hidden",
-    alignItems: "center",
+    //alignItems: "center",
     flex: 1,
   },
   frameParent: {
@@ -288,6 +347,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e6e6e6",
     gap: 12,
   },
   profileLink: {
@@ -318,8 +379,6 @@ const styles = StyleSheet.create({
   },
   scheduleContainer: {
     marginTop: 16,
-    //paddingHorizontal: 20,
-    //paddingVertical: 12,
     width: "90%",
     alignSelf: "center",
   },
@@ -378,22 +437,26 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardContent: {
-    //flex: 1,
-    gap: "17%",
-    //paddingRight: 12,
+    paddingRight: 12,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
   },
   cardText: {
     fontSize: 20,
     color: "#111",
     fontFamily: "Roboto-Regular",
+    flex: 1,
+    minWidth: 0,
+    marginRight: 12,
   },
   cardButton: {
     backgroundColor: "#d32f2f",
     paddingVertical: 10,
     paddingHorizontal: 18,
     borderRadius: 24,
+    alignSelf: "flex-end",
   },
   cardButtonText: {
     color: "#fff",
@@ -402,5 +465,94 @@ const styles = StyleSheet.create({
   },
   formWrap: {
     marginTop: 12,
+  },
+  /* Seu Impacto */
+  impactContainer: {
+    width: "90%",
+    alignSelf: "center",
+    marginTop: 25,
+  },
+  impactHeader: {
+    fontSize: 16,
+    color: "#8c8c8c",
+    fontFamily: "Roboto-Bold",
+    marginBottom: 12,
+  },
+  impactRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: 12,
+    marginTop: 10,
+  },
+  statCard: {
+    flexBasis: "48%",
+    minWidth: 140,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 12,
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  statTopRowSmall: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  statNumber: {
+    fontSize: 28,
+    color: "#B71c1c",
+    fontFamily: "Roboto-Bold",
+  },
+  statSeparator: {
+    fontSize: 12,
+    color: "#B71c1c",
+    marginLeft: 6,
+    marginRight: 6,
+  },
+  statFooterSmall: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
+    paddingTop: 8,
+  },
+  statAction: {
+    color: "#9b9b9b",
+    fontFamily: "Roboto-Regular",
+  },
+  statChevron: {
+    color: "#cfcfcf",
+    fontSize: 18,
+  },
+  statTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  statSmallTitle: {
+    fontSize: 14,
+    color: "#777",
+    fontFamily: "Roboto-Bold",
+  },
+  statSmallSubtitle: {
+    fontSize: 12,
+    color: "#999",
+    marginTop: 4,
+  },
+  progressBar: {
+    height: 8,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 8,
+    overflow: "hidden",
+    marginVertical: 8,
+  },
+  progressFill: {
+    width: "60%",
+    height: "100%",
+    backgroundColor: "#d32f2f",
   },
 })

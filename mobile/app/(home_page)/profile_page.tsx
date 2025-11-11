@@ -1,12 +1,12 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, Feather, EvilIcons} from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router'; // Importe o useRouter!
 import React, { useState } from 'react';
 import {
   Alert,
   Image,
   Platform,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -58,14 +58,14 @@ export default function ProfilePage() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f4f4f8" />
+      <StatusBar barStyle="dark-content" backgroundColor="#ffff" />
       <ScrollView
         style={styles.container}
         contentContainerStyle={{ paddingBottom: 30 }}
       >
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={28} color="#333" />
+            <Feather name="arrow-left" size={22} color="#333" />
           </TouchableOpacity>
           <Image source={appLogo} style={styles.headerLogo} />
         </View>
@@ -95,11 +95,9 @@ export default function ProfilePage() {
               <Text style={styles.settingsText}>Ativar notificações</Text>
             </View>
             <Switch
-              trackColor={{ false: '#767577', true: '#81b0ff' }}
-              thumbColor={notificationsEnabled ? '#f4f3f4' : '#f4f3f4'}
-              onValueChange={() =>
-                setNotificationsEnabled((prev) => !prev)
-              }
+              trackColor={{ false: "#767577", true: "#81b0ff" }}
+              thumbColor={notificationsEnabled ? "#f4f3f4" : "#f4f3f4"}
+              onValueChange={() => setNotificationsEnabled((prev) => !prev)}
               value={notificationsEnabled}
             />
           </View>
@@ -107,7 +105,7 @@ export default function ProfilePage() {
           <TouchableOpacity
             style={styles.settingsItem}
             // Navega para /app/(home_page)/personal_settings_page.tsx
-            onPress={() => router.push('/(home_page)/personal_settings_page')}
+            onPress={() => router.push("/(others_page)/personal_settings_page")}
           >
             <View style={styles.settingsItemLeft}>
               <Ionicons
@@ -118,7 +116,7 @@ export default function ProfilePage() {
               />
               <Text style={styles.settingsText}>Configurações gerais</Text>
             </View>
-            <Ionicons name="chevron-forward" size={22} color="#999" />
+            <EvilIcons name="chevron-right" size={30} color="#999" />
           </TouchableOpacity>
         </View>
 
@@ -134,8 +132,8 @@ export default function ProfilePage() {
               <Text style={styles.settingsText}>Modo escuro</Text>
             </View>
             <Switch
-              trackColor={{ false: '#767577', true: '#81b0ff' }}
-              thumbColor={darkModeEnabled ? '#f4f3f4' : '#f4f3f4'}
+              trackColor={{ false: "#767577", true: "#81b0ff" }}
+              thumbColor={darkModeEnabled ? "#f4f3f4" : "#f4f3f4"}
               onValueChange={() => setDarkModeEnabled((prev) => !prev)}
               value={darkModeEnabled}
             />
@@ -144,7 +142,7 @@ export default function ProfilePage() {
           <TouchableOpacity
             style={styles.settingsItem}
             // Navega para /app/(home_page)/suggestions_page.tsx
-            onPress={() => router.push('/(home_page)/suggestions_page')}
+            onPress={() => router.push("/(others_page)/suggestions_page")}
           >
             <View style={styles.settingsItemLeft}>
               <Ionicons
@@ -155,7 +153,7 @@ export default function ProfilePage() {
               />
               <Text style={styles.settingsText}>Enviar sugestão</Text>
             </View>
-            <Ionicons name="chevron-forward" size={22} color="#999" />
+            <EvilIcons name="chevron-right" size={30} color="#999" />
           </TouchableOpacity>
         </View>
 
@@ -170,7 +168,7 @@ export default function ProfilePage() {
               />
               <Text style={styles.settingsText}>Perguntas frequentes</Text>
             </View>
-            <Ionicons name="chevron-forward" size={22} color="#999" />
+            <EvilIcons name="chevron-right" size={30} color="#999" />
           </TouchableOpacity>
           <View style={styles.divider} />
           <TouchableOpacity style={styles.settingsItem}>
@@ -183,7 +181,7 @@ export default function ProfilePage() {
               />
               <Text style={styles.settingsText}>Termos de uso</Text>
             </View>
-            <Ionicons name="chevron-forward" size={22} color="#999" />
+            <EvilIcons name="chevron-right" size={30} color="#999" />
           </TouchableOpacity>
           <View style={styles.divider} />
           <TouchableOpacity style={styles.settingsItem}>
@@ -196,42 +194,45 @@ export default function ProfilePage() {
               />
               <Text style={styles.settingsText}>Políticas de privacidade</Text>
             </View>
-            <Ionicons name="chevron-forward" size={22} color="#999" />
+            <EvilIcons name="chevron-right" size={30} color="#999" />
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={() => router.replace("/")}
+        >
           <Ionicons name="log-out-outline" size={22} color="#FFFFFF" />
           <Text style={styles.logoutButtonText}>Sair do aplicativo</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f4f4f8',
+    backgroundColor: "#fff",
   },
   container: {
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === 'android' ? 16 : 0,
+    paddingTop: Platform.OS === "android" ? 16 : 0,
     paddingBottom: 8,
   },
   headerLogo: {
     width: 36,
     height: 36,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   profileSection: {
-    alignItems: 'center',
+    alignItems: "center",
     marginVertical: 20,
   },
   avatar: {
@@ -240,25 +241,25 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginBottom: 12,
     borderWidth: 3,
-    borderColor: '#fff',
+    borderColor: "#fff",
   },
   profileName: {
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   editProfileText: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#007AFF',
+    fontWeight: "600",
+    color: "#007AFF",
     marginTop: 6,
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 12,
     marginHorizontal: 16,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 1,
@@ -268,42 +269,42 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   settingsItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: 14,
     paddingHorizontal: 16,
   },
   settingsItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   settingsIcon: {
     marginRight: 16,
   },
   settingsText: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   divider: {
     height: 1,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     marginHorizontal: 16,
   },
   logoutButton: {
-    backgroundColor: '#CC3333',
+    backgroundColor: "#CC3333",
     borderRadius: 12,
     padding: 16,
     marginHorizontal: 16,
     marginTop: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   logoutButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 10,
   },
-});
+})
