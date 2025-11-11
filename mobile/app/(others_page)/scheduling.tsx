@@ -5,7 +5,6 @@ import { useState } from "react"
 import {
   LayoutAnimation,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,6 +13,7 @@ import {
   UIManager,
   View,
 } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 // Habilita animação de layout no Android
 if (
@@ -50,16 +50,87 @@ export default function SchedulingPage() {
   const [showCityList, setShowCityList] = useState(false)
   const [showLocalList, setShowLocalList] = useState(false)
 
-  const cities = ["São Paulo", "Campinas", "Ribeirão Preto"]
+  const cities = ["Aracaju"]
   const locationsByCity: Record<string, string[]> = {
-    "São Paulo": ["Hemocentro SP - Centro", "Hemocentro SP - Zona Sul"],
-    Campinas: ["Hemocentro Campinas - Centro", "Hemocentro Campinas - Norte"],
-    "Ribeirão Preto": ["Hemocentro RP - Central"],
+    Aracaju: ["HEMOSE"],
   }
 
   const toggleOpen = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
     setOpen((s) => !s)
+  }
+
+  // Avança para o próximo card do fluxo
+  const goToNext = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+    if (open) {
+      setOpen(false)
+      setOpenPre(true)
+      return
+    }
+    if (openPre) {
+      setOpenPre(false)
+      setOpenDados(true)
+      return
+    }
+    if (openDados) {
+      setOpenDados(false)
+      setOpenLocal(true)
+      return
+    }
+    if (openLocal) {
+      setOpenLocal(false)
+      setOpenDataHora(true)
+      return
+    }
+    if (openDataHora) {
+      setOpenDataHora(false)
+      setOpenVerif(true)
+      return
+    }
+    // Se estiver no último passo, apenas fechar tudo (ou você pode navegar/confirmar aqui)
+    if (openVerif) {
+      console.log("Fluxo finalizado")
+    }
+  }
+
+  // Formata CPF enquanto o usuário digita: 000.000.000-00
+  const formatCPF = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11)
+    if (digits.length <= 3) return digits
+    if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`
+    if (digits.length <= 9)
+      return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`
+    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(
+      6,
+      9
+    )}-${digits.slice(9)}`
+  }
+
+  const handleCpfChange = (text: string) => {
+    setCpf(formatCPF(text))
+  }
+
+  const formatNascimento = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 8)
+    if (digits.length <= 2) return digits
+    if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`
+    return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`
+  }
+
+  const handleNascimentoChange = (text: string) => {
+    setDataNascimento(formatNascimento(text))
+  }
+
+  const formatNumber = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11)
+    if (digits.length <= 2) return `(${digits}`
+    if (digits.length <= 5) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
+  }
+
+  const handlePhoneChange = (text: string) => {
+    setTelefone(formatNumber(text))
   }
 
   const options = [
@@ -86,8 +157,8 @@ export default function SchedulingPage() {
         <Text style={styles.headerTitle}>Agendamento Doação</Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 140 }}>
-        <View style={[styles.page, { marginTop: 0 }]}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}>
+        <View style={[styles.page]}>
           <View style={styles.card}>
             <TouchableOpacity
               style={styles.cardHeader}
@@ -247,9 +318,10 @@ export default function SchedulingPage() {
                   style={styles.input}
                   placeholder="Digite seu CPF"
                   value={cpf}
-                  onChangeText={setCpf}
+                  onChangeText={handleCpfChange}
                   keyboardType="numeric"
                   returnKeyType="next"
+                  maxLength={14}
                 />
 
                 <Text style={styles.label}>Nome Completo</Text>
@@ -267,7 +339,7 @@ export default function SchedulingPage() {
                     style={styles.inputInline}
                     placeholder="dd/mm/aaaa"
                     value={dataNascimento}
-                    onChangeText={setDataNascimento}
+                    onChangeText={handleNascimentoChange}
                     returnKeyType="next"
                   />
                   <TouchableOpacity
@@ -296,7 +368,7 @@ export default function SchedulingPage() {
                   style={styles.input}
                   placeholder="(xx) xxxxx-xxxx"
                   value={telefone}
-                  onChangeText={setTelefone}
+                  onChangeText={handlePhoneChange}
                   keyboardType="phone-pad"
                 />
               </View>
@@ -461,36 +533,28 @@ export default function SchedulingPage() {
           </View>
 
           <View style={{ height: 24 }} />
-
-          <View style={styles.footerFixed}>
-            <TouchableOpacity
-              style={styles.backFooter}
-              onPress={() => router.back()}
-            >
-              <Text style={styles.backFooterText}>Voltar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.advanceFooter,
-                !selected && !hasPreAnswers && styles.nextButtonDisabled,
-              ]}
-              onPress={() => console.log("avançar")}
-              disabled={!selected && !hasPreAnswers}
-            >
-              <Text style={styles.advanceFooterText}>Avançar</Text>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            style={[styles.nextButton, !selected && styles.nextButtonDisabled]}
-            disabled={!selected}
-            onPress={() => {
-              // navegar ou abrir próximo passo
-              // por enquanto exibimos console
-              console.log("tipo selecionado", selected)
-            }}
-          ></TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Footer fixo: colocado fora do ScrollView para permanecer na tela */}
+      <View style={styles.footerFixed} pointerEvents="box-none">
+        <TouchableOpacity
+          style={styles.backFooter}
+          onPress={() => router.back()}
+        >
+          <Text style={styles.backFooterText}>Voltar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.advanceFooter,
+            !selected && !hasPreAnswers && styles.nextButtonDisabled,
+          ]}
+          onPress={goToNext}
+          disabled={!selected && !hasPreAnswers}
+        >
+          <Text style={styles.advanceFooterText}>Avançar</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   )
 }
@@ -500,6 +564,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#fff",
+    gap: 12,
   },
   card: {
     backgroundColor: "#fff",
@@ -577,7 +642,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    padding: 12,
+    padding: 30,
     flexDirection: "row",
     justifyContent: "space-between",
     backgroundColor: "#fff",
@@ -627,6 +692,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 8,
     backgroundColor: "#fff",
+    borderBlockColor: "#f0dede",
+    borderBottomWidth: 1,
   },
   backButton: {
     position: "absolute",

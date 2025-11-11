@@ -1,23 +1,24 @@
 import React from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   StatusBar,
   Platform,
   ScrollView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 export default function PersonalSettingsPage() {
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f4f4f8" />
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <View style={styles.header}>
-        <TouchableOpacity>
-          <Ionicons name="arrow-back" size={28} color="#333" />
+        <TouchableOpacity onPress={() => router.replace('/(home_page)/profile_page')}>
+          <Feather name="arrow-left" size={22} color="#333" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Configurações Pessoais</Text>
         <View style={{ width: 28 }} />
@@ -89,7 +90,7 @@ export default function PersonalSettingsPage() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f4f4f8',
+    backgroundColor: '#fff',
   },
   container: {
     flex: 1,
@@ -102,7 +103,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: Platform.OS === 'android' ? 16 : 0,
     paddingBottom: 8,
-    backgroundColor: '#f4f4f8',
   },
   headerTitle: {
     fontSize: 18,

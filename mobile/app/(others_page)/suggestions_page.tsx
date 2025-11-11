@@ -1,10 +1,10 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, Feather } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
     Alert,
     KeyboardAvoidingView,
     Platform,
-    SafeAreaView,
     ScrollView,
     StatusBar,
     StyleSheet,
@@ -13,6 +13,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SuggestionsPage() {
   const [suggestion, setSuggestion] = useState('');
@@ -28,10 +29,10 @@ export default function SuggestionsPage() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f4f4f8" />
+      <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
-        <TouchableOpacity>
-          <Ionicons name="arrow-back" size={28} color="#333" />
+        <TouchableOpacity onPress={() => {router.replace('/(home_page)/profile_page')}}>
+          <Feather name="arrow-left" size={22} color="#333" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Enviar Sugestão</Text>
         <View style={{ width: 28 }} />
@@ -78,7 +79,7 @@ export default function SuggestionsPage() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f4f4f8',
+    backgroundColor: '#fff',
   },
   container: {
     flex: 1,
@@ -91,7 +92,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: Platform.OS === 'android' ? 16 : 0,
     paddingBottom: 8,
-    backgroundColor: '#f4f4f8',
   },
   headerTitle: {
     fontSize: 18,

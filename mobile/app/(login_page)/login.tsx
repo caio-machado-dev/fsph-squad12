@@ -8,13 +8,13 @@ import {
   ActivityIndicator,
   Image,
   ImageSourcePropType,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
+  StatusBar,
 } from "react-native"
 import { getLogin } from "./_auth"
 
@@ -103,11 +103,11 @@ const LoginScreen = () => {
   }, [response]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor={colors.primaryRed} />
       <View style={styles.formContainer}>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
         >
           <View style={styles.loginContainer}>
             <TextInput
@@ -184,30 +184,131 @@ const LoginScreen = () => {
           </Text>
         </ScrollView>
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.primaryRed },
-  loginContainer: { width: "100%", height: "auto", gap: 10 },
-  formContainer: { flex: 1, backgroundColor: colors.white, paddingHorizontal: 20, paddingVertical: 20 },
-  scrollContent: { padding: 20 },
-  input: { backgroundColor: colors.white, borderWidth: 1, borderColor: colors.gray50, borderRadius: 12, paddingVertical: 13, paddingHorizontal: 16, fontSize: 16, marginBottom: 10, color: colors.black, fontFamily: fonts.regular },
-  passwordContainer: { flexDirection: "row", alignItems: "center", backgroundColor: colors.white, borderWidth: 1, borderColor: colors.gray50, borderRadius: 12, paddingHorizontal: 16, marginBottom: 10 },
-  inputPassword: { flex: 1, paddingVertical: 13, fontSize: 16, color: colors.black, fontFamily: fonts.regular },
-  forgotPasswordText: { fontSize: 14, color: colors.primaryRed, textAlign: "right", marginBottom: 14, fontFamily: fonts.bold },
-  loginButton: { flexDirection: "row", justifyContent: "center", alignItems: "center", backgroundColor: colors.primaryRed, borderRadius: 12, paddingVertical: 14, marginBottom: 16, gap: "60%" },
-  loginButtonText: { color: colors.white, fontSize: 16, fontFamily: fonts.bold, marginRight: 8 },
-  dividerContainer: { flexDirection: "row", alignItems: "center", marginBottom: 16 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: colors.gray50 },
-  dividerText: { marginHorizontal: 16, fontSize: 12, color: colors.gray, fontFamily: fonts.regular },
-  socialLoginContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 16 },
-  socialButton: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: colors.gray50, borderRadius: 12, paddingVertical: 14, marginHorizontal: 4 },
-  socialLogo: { width: 20, height: 20, marginRight: 10 },
-  socialButtonText: { fontSize: 14, color: colors.black, fontFamily: fonts.bold },
-  termsText: { fontSize: 12, color: colors.gray, textAlign: "center", lineHeight: 18, fontFamily: fonts.regular },
-  linkText: { color: colors.primaryRed, textDecorationLine: "underline", fontFamily: fonts.bold },
+  safeArea: { 
+    flex: 1,
+    backgroundColor: colors.primaryRed
+   },
+  loginContainer: { 
+    width: "100%",
+    height: "auto",
+    gap: 10
+   },
+  formContainer: { 
+    flex: 1,
+    backgroundColor: colors.white,
+    paddingVertical: 20
+   },
+  input: { 
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.gray50,
+    borderRadius: 12,
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    marginBottom: 10,
+    color: colors.black,
+    fontFamily: fonts.regular
+   },
+  passwordContainer: { 
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.gray50,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    marginBottom: 10
+   },
+  inputPassword: { 
+    flex: 1,
+    paddingVertical: 13,
+    fontSize: 16,
+    color: colors.black,
+    fontFamily: fonts.regular
+   },
+  forgotPasswordText: { 
+    fontSize: 14,
+    color: colors.primaryRed,
+    textAlign: "right",
+    marginBottom: 14,
+    fontFamily: fonts.bold 
+  },
+  loginButton: { 
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.primaryRed, 
+    borderRadius: 12, 
+    paddingVertical: 14, 
+    marginBottom: 16, 
+    gap: "60%"
+   },
+  loginButtonText: { 
+    color: colors.white,
+    fontSize: 16,
+    fontFamily: fonts.bold,
+    marginRight: 8
+   },
+  dividerContainer: { 
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16
+   },
+  dividerLine: { 
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.gray50
+   },
+  dividerText: { 
+    marginHorizontal: 16,
+    fontSize: 12,
+    color: colors.gray,
+    fontFamily: fonts.regular
+   },
+  socialLoginContainer: { 
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16 
+  },
+  socialButton: { 
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: colors.gray50,
+    borderRadius: 12,
+    paddingVertical: 14,
+    marginHorizontal: 4
+   },
+  socialLogo: { 
+    width: 20,
+    height: 20,
+    marginRight: 10
+   },
+  socialButtonText: { 
+    fontSize: 14,
+    color: colors.black,
+    fontFamily: fonts.bold
+   },
+  termsText: { 
+    fontSize: 12,
+    color: colors.gray,
+    textAlign: "center",
+    lineHeight: 18,
+    fontFamily: fonts.regular
+   },
+  linkText: { 
+    color: colors.primaryRed,
+    textDecorationLine: "underline",
+    fontFamily: fonts.bold
+   },
 })
 
 export default LoginScreen

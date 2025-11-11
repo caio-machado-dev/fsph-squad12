@@ -37,8 +37,8 @@ export default function HomeLayout() {
         options={{
           title: 'Feed',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons 
-              name={focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline'} 
+            <Ionicons
+              name={focused ? 'chatbox-ellipses' : 'chatbox-ellipses-outline'}
               size={24}
               color={color} 
             />
