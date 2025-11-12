@@ -1,10 +1,17 @@
 import { ThemedText } from "@/components/ThemedText"
-import { FontAwesome, FontAwesome6 } from "@expo/vector-icons"
+import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons"
 import { useRouter } from "expo-router"
 import * as React from "react"
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Alert, Image, LogBox, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { shadows } from "./_shadow"
+
+// Desabilita warnings na tela
+LogBox.ignoreAllLogs(true)
+
+// Desabilita console.warn globalmente
+console.warn = () => {}
+console.error = () => {}
 
 export default function Frame116() {
   const router = useRouter()
@@ -43,8 +50,15 @@ export default function Frame116() {
     return <View style={styles.line} />
   }
 
+  const campaigns = [
+    { name: 'João Santos', donors: '3/10', bloodTypes: ['A+', 'A-', 'O+', 'O-'] },
+    { name: 'Sofia', donors: '45/50', bloodTypes: ['A-', 'B-', 'AB-', 'O-'] },
+    { name: 'Simone', donors: '15/30', bloodTypes: [] },
+  ]
+
   return (
     <SafeAreaView style={styles.parent}>
+      <ScrollView showsVerticalScrollIndicator={false}>
       {/* Profile header: foto e nome do usuário */}
       <View style={styles.profileContainer}>
         <TouchableOpacity
@@ -129,10 +143,8 @@ export default function Frame116() {
         </View>
         {/* Agendamentos */}
         <View style={styles.scheduleContainer}>
+          <Text style={styles.scheduleTitle}>Seu próximo agendamento</Text>
           <View style={styles.card}>
-            <View style={styles.cardTitleContainer}>
-              <Text style={styles.cardTitle}>Seu próximo agendamento</Text>
-            </View>
             <View style={styles.cardContent}>
               <Text style={styles.cardText}>
                 {nextAppointment
@@ -153,6 +165,81 @@ export default function Frame116() {
           </View>
         </View>
       </View>
+
+      {/* Seção Seu Impacto */}
+      <View style={styles.impactContainer}>
+        <Text style={styles.sectionTitle}>Seu Impacto</Text>
+        
+        <View style={styles.impactCards}>
+          <View style={styles.impactCard}>
+            <Text style={styles.impactNumber}>2</Text>
+            <Text style={styles.impactLabel}>Doações</Text>
+            <Text style={styles.impactSubtext}>Acessar histórico</Text>
+          </View>
+          
+          <View style={styles.impactCard}>
+            <View style={styles.heartIconContainer}>
+              <Text style={styles.heartIcon}>❤️</Text>
+            </View>
+            <Text style={styles.impactNumber}>8</Text>
+            <Text style={styles.impactLabel}>Vidas salvas</Text>
+          </View>
+          
+          <View style={styles.impactCard}>
+            <MaterialCommunityIcons name="trophy" size={36} color="#DC2626" />
+            <Text style={styles.impactTrophyText}>Vamos lá!</Text>
+            <Text style={styles.impactSubtext}>Seja uma heroína{'\n'}e salve mais vidas</Text>
+            <Text style={styles.impactSubtext}>Às vezes, ele é{'\n'}um dos seus{'\n'}maiores{'\n'}talentos.</Text>
+            <Text style={styles.impactLabel}>Ranking</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Seção Campanhas */}
+      <View style={styles.campaignsContainer}>
+        <Text style={styles.sectionTitle}>Campanhas</Text>
+        <Text style={styles.campaignsSubtitle}>Essas pessoas estão precisando de você!</Text>
+        
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          style={styles.campaignsScroll}
+          contentContainerStyle={styles.campaignsContent}
+        >
+          {campaigns.map((campaign, index) => (
+            <View key={index} style={styles.campaignCard}>
+              <View style={styles.campaignHeader}>
+                <View style={styles.campaignUser}>
+                  <Image 
+                    source={{ uri: 'https://via.placeholder.com/40' }}
+                    style={styles.campaignAvatar}
+                  />
+                  <Text style={styles.campaignName}>{campaign.name}</Text>
+                </View>
+                <View style={styles.campaignBadge}>
+                  <Text style={styles.campaignBadgeText}>Doadores</Text>
+                </View>
+              </View>
+              
+              <Text style={styles.campaignDonors}>{campaign.donors}</Text>
+              
+              {campaign.bloodTypes.length > 0 && (
+                <View style={styles.campaignBloodTypes}>
+                  {campaign.bloodTypes.map((type, idx) => (
+                    <View key={idx} style={styles.campaignBloodType}>
+                      <Text style={styles.campaignBloodTypeText}>{type}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+              
+              <Text style={styles.campaignLabel}>Tipo</Text>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+
+      </ScrollView>
     </SafeAreaView>
   )
 }
@@ -160,7 +247,7 @@ export default function Frame116() {
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    //backgroundColor: "#c2ababff",
+    backgroundColor: "#FFFFFF",
   },
   line: {
     borderBlockColor: "#ccc",
@@ -196,7 +283,10 @@ const styles = StyleSheet.create({
     borderColor: "rgba(218, 218, 218, 0.3)",
     borderWidth: 1,
     borderStyle: "solid",
-    overflow: "hidden",
+    overflow: "visible",
+    flex: 1,
+    minWidth: 60,
+    maxWidth: 70,
   },
   alertaTypo: {
     textAlign: "center",
@@ -214,7 +304,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   frameParent: {
-    width: "90%",
+    width: "92%",
     borderRadius: 10,
     backgroundColor: "#d32f2f",
     height: 125,
@@ -222,9 +312,10 @@ const styles = StyleSheet.create({
     borderColor: "rgba(218, 218, 218, 0.17)",
     borderStyle: "solid",
     alignItems: "center",
-    overflow: "hidden",
+    overflow: "visible",
     alignSelf: "center",
     marginVertical: 8,
+    paddingHorizontal: 8,
   },
   vidasHumanasPrecisamDeVocWrapper: {
     width: "100%",
@@ -241,13 +332,15 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   frameGroup: {
-    gap: 10,
+    gap: 6,
     width: "100%",
     alignSelf: "stretch",
     flexDirection: "row",
-    overflow: "hidden",
+    overflow: "visible",
     alignItems: "center",
     flex: 1,
+    justifyContent: "space-between",
+    paddingHorizontal: 4,
   },
   vectorParent: {
     height: 54,
@@ -318,16 +411,14 @@ const styles = StyleSheet.create({
   },
   scheduleContainer: {
     marginTop: 16,
-    //paddingHorizontal: 20,
-    //paddingVertical: 12,
-    width: "90%",
-    alignSelf: "center",
+    paddingHorizontal: 20,
+    width: "100%",
   },
   scheduleTitle: {
-    fontSize: 16,
-    fontFamily: "Roboto-Bold",
+    fontSize: 14,
+    color: "#9b9b9b",
+    fontFamily: "Roboto-Regular",
     marginBottom: 8,
-    color: "#111",
   },
   input: {
     backgroundColor: "#fff",
@@ -365,12 +456,8 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,
-    padding: 12,
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "space-between",
+    padding: 16,
     width: "100%",
-    // leve sombra
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -378,29 +465,181 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardContent: {
-    //flex: 1,
-    gap: "17%",
-    //paddingRight: 12,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
   },
   cardText: {
-    fontSize: 20,
+    fontSize: 16,
     color: "#111",
     fontFamily: "Roboto-Regular",
+    flex: 1,
+    marginRight: 12,
   },
   cardButton: {
     backgroundColor: "#d32f2f",
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 24,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
   },
   cardButtonText: {
     color: "#fff",
     fontFamily: "Roboto-Bold",
-    fontSize: 16,
+    fontSize: 14,
   },
   formWrap: {
     marginTop: 12,
+  },
+  impactContainer: {
+    marginTop: 24,
+    paddingHorizontal: 20,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#333",
+    marginBottom: 16,
+  },
+  impactCards: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  impactCard: {
+    flex: 1,
+    backgroundColor: "#FFF",
+    borderRadius: 12,
+    padding: 16,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  impactNumber: {
+    fontSize: 32,
+    fontWeight: "700",
+    color: "#DC2626",
+    marginBottom: 4,
+  },
+  impactLabel: {
+    fontSize: 12,
+    color: "#666",
+    textAlign: "center",
+  },
+  impactSubtext: {
+    fontSize: 10,
+    color: "#999",
+    textAlign: "center",
+    marginTop: 4,
+    lineHeight: 14,
+  },
+  heartIconContainer: {
+    marginBottom: 4,
+  },
+  heartContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  heartIcon: {
+    fontSize: 24,
+  },
+  impactTrophyText: {
+    fontSize: 12,
+    color: "#666",
+    textAlign: "center",
+    fontWeight: "600",
+    marginTop: 4,
+  },
+  campaignsContainer: {
+    marginTop: 24,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  campaignsSubtitle: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 16,
+  },
+  campaignsScroll: {
+    marginHorizontal: -20,
+    paddingHorizontal: 20,
+  },
+  campaignsContent: {
+    gap: 16,
+    paddingRight: 20,
+  },
+  campaignCard: {
+    width: 160,
+    backgroundColor: "#FFF",
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  campaignHeader: {
+    marginBottom: 12,
+  },
+  campaignUser: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 8,
+  },
+  campaignAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+  },
+  campaignName: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+    flex: 1,
+  },
+  campaignBadge: {
+    backgroundColor: "#FFE5E5",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  campaignBadgeText: {
+    fontSize: 8,
+    color: "#DC2626",
+    fontWeight: "600",
+  },
+  campaignDonors: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#333",
+    marginBottom: 8,
+  },
+  campaignBloodTypes: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 4,
+    marginBottom: 8,
+  },
+  campaignBloodType: {
+    backgroundColor: "#FFE5E5",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  campaignBloodTypeText: {
+    fontSize: 10,
+    color: "#DC2626",
+    fontWeight: "600",
+  },
+  campaignLabel: {
+    fontSize: 10,
+    color: "#999",
+    marginTop: 4,
   },
 })
