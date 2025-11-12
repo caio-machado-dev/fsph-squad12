@@ -1,8 +1,8 @@
 import { ThemedText } from "@/components/ThemedText"
-import { FontAwesome, FontAwesome6, EvilIcons, FontAwesome5, Ionicons } from "@expo/vector-icons"
+import { EvilIcons, FontAwesome, FontAwesome5, FontAwesome6 } from "@expo/vector-icons"
 import { useRouter } from "expo-router"
 import * as React from "react"
-import { Alert, StyleSheet, Text, TouchableOpacity, View, StatusBar, ScrollView } from "react-native"
+import { Alert, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { shadows } from "./_shadow"
 
@@ -50,7 +50,7 @@ export default function Frame116() {
       <View style={styles.profileContainer}>
         <TouchableOpacity
           activeOpacity={0.8}
-          onPress={() => router.push("/profile" as any)}
+          onPress={() => router.push("/profile_page" as any)}
           style={styles.profileLink}
         >
           {/* substituir require por imagem do usuário se disponível */}
