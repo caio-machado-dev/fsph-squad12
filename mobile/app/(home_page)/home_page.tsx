@@ -1,8 +1,8 @@
 import { ThemedText } from "@/components/ThemedText"
-import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons"
+import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, EvilIcons } from "@expo/vector-icons"
 import { useRouter } from "expo-router"
 import * as React from "react"
-import { Alert, Image, LogBox, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Alert, Image, LogBox, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { shadows } from "./_shadow"
 
@@ -58,187 +58,191 @@ export default function Frame116() {
 
   return (
     <SafeAreaView style={styles.parent}>
+      <StatusBar barStyle="dark-content"/>
       <ScrollView showsVerticalScrollIndicator={false}>
-      {/* Profile header: foto e nome do usuário */}
-      <View style={styles.profileContainer}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => router.push("/profile" as any)}
-          style={styles.profileLink}
-        >
-          {/* substituir require por imagem do usuário se disponível */}
-          <FontAwesome
-            name="user-circle"
-            size={48}
-            color="#d32f2f"
-            style={styles.profileImage}
-          />
-        </TouchableOpacity>
-        <View style={styles.profileInfo}>
-          <ThemedText style={styles.profileGreeting}>Olá,</ThemedText>
-          <ThemedText style={styles.profileName}>Usuário</ThemedText>
-        </View>
-      </View>
-      <View style={[styles.view, styles.viewFlexBox]}>
-        <View style={[styles.frameParent, shadows.xl]}>
-          <View style={styles.vidasHumanasPrecisamDeVocWrapper}>
-            <Text style={[styles.vidasHumanasPrecisam, styles.aFlexBox]}>
-              Vidas humanas precisam de você!
-            </Text>
-          </View>
-          <View style={[styles.frameGroup, styles.viewFlexBox]}>
-            <View style={styles.frameBorder}>
-              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>A-</Text>
-              </View>
-              <Line />
-              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                <Text style={styles.alertaTypo}>Alerta</Text>
-              </View>
-            </View>
-            <View style={styles.frameBorder}>
-              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>B+</Text>
-              </View>
-              <Line />
-              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                <Text style={styles.alertaTypo}>Crítico</Text>
-              </View>
-            </View>
-            <View style={[styles.frameParent2, styles.frameBorder]}>
-              <View style={[styles.vectorContainer, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>AB+</Text>
-              </View>
-              <Line />
-              <View style={[styles.emergnciaWrapper, styles.wrapperBorder]}>
-                <Text style={[styles.emergncia, styles.alertaTypo]}>
-                  Emergência
-                </Text>
-              </View>
-            </View>
-            <View style={styles.frameBorder}>
-              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>B-</Text>
-              </View>
-              <Line />
-              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                <Text style={styles.alertaTypo}>Alerta</Text>
-              </View>
-            </View>
-            <View style={styles.frameBorder}>
-              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>O-</Text>
-              </View>
-              <Line />
-              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                <Text style={styles.alertaTypo}>Alerta</Text>
-              </View>
-            </View>
+        {/* Profile header: foto e nome do usuário */}
+        <View style={styles.profileContainer}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => router.push("/profile_page" as any)}
+            style={styles.profileLink}
+          >
+            {/* substituir require por imagem do usuário se disponível */}
+            <FontAwesome
+              name="user-circle"
+              size={48}
+              color="#d32f2f"
+              style={styles.profileImage}
+            />
+          </TouchableOpacity>
+          <View style={styles.profileInfo}>
+            <ThemedText style={styles.profileGreeting}>Olá,</ThemedText>
+            <ThemedText style={styles.profileName}>Usuário</ThemedText>
           </View>
         </View>
-        {/* Agendamentos */}
-        <View style={styles.scheduleContainer}>
-          <Text style={styles.scheduleTitle}>Seu próximo agendamento</Text>
-          <View style={styles.card}>
-            <View style={styles.cardContent}>
-              <Text style={styles.cardText}>
-                {nextAppointment
-                  ? `${nextAppointment.local} — ${nextAppointment.data} às ${nextAppointment.hora}`
-                  : "Sem agendamentos próximos"}
+
+        {/* Estoque de sangue */}
+        <View style={[styles.view, styles.viewFlexBox]}>
+          <View style={[styles.frameParent, shadows.xl]}>
+            <View style={styles.vidasHumanasPrecisamDeVocWrapper}>
+              <Text style={[styles.vidasHumanasPrecisam, styles.aFlexBox]}>
+                Vidas humanas precisam de você!
               </Text>
+            </View>
+            <View style={[styles.frameGroup, styles.viewFlexBox]}>
+              <View style={styles.frameBorder}>
+                <View style={[styles.vectorParent, styles.vectorFlexBox]}>
+                  <FontAwesome6 name="droplet" size={24} color="white" />
+                  <Text style={[styles.a, styles.aFlexBox]}>A-</Text>
+                </View>
+                <Line />
+                <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
+                  <Text style={styles.alertaTypo}>Alerta</Text>
+                </View>
+              </View>
+              <View style={styles.frameBorder}>
+                <View style={[styles.vectorParent, styles.vectorFlexBox]}>
+                  <FontAwesome6 name="droplet" size={24} color="white" />
+                  <Text style={[styles.a, styles.aFlexBox]}>B+</Text>
+                </View>
+                <Line />
+                <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
+                  <Text style={styles.alertaTypo}>Crítico</Text>
+                </View>
+              </View>
+              <View style={[styles.frameParent2, styles.frameBorder]}>
+                <View style={[styles.vectorContainer, styles.vectorFlexBox]}>
+                  <FontAwesome6 name="droplet" size={24} color="white" />
+                  <Text style={[styles.a, styles.aFlexBox]}>AB+</Text>
+                </View>
+                <Line />
+                <View style={[styles.emergnciaWrapper, styles.wrapperBorder]}>
+                  <Text style={[styles.emergncia, styles.alertaTypo]}>
+                    Emergência
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.frameBorder}>
+                <View style={[styles.vectorParent, styles.vectorFlexBox]}>
+                  <FontAwesome6 name="droplet" size={24} color="white" />
+                  <Text style={[styles.a, styles.aFlexBox]}>B-</Text>
+                </View>
+                <Line />
+                <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
+                  <Text style={styles.alertaTypo}>Alerta</Text>
+                </View>
+              </View>
+              <View style={styles.frameBorder}>
+                <View style={[styles.vectorParent, styles.vectorFlexBox]}>
+                  <FontAwesome6 name="droplet" size={24} color="white" />
+                  <Text style={[styles.a, styles.aFlexBox]}>O-</Text>
+                </View>
+                <Line />
+                <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
+                  <Text style={styles.alertaTypo}>Alerta</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Agendamentos */}
+          <View style={styles.scheduleContainer}>
+            <Text style={styles.scheduleTitle}>Seu próximo agendamento</Text>
+            <View style={styles.card}>
+              <View style={styles.cardContent}>
+                <Text style={styles.cardText}>
+                  {nextAppointment
+                    ? `${nextAppointment.local} — ${nextAppointment.data} às ${nextAppointment.hora}`
+                    : "Sem agendamentos próximos"}
+                </Text>
+                <TouchableOpacity
+                  style={styles.cardButton}
+                  onPress={() => {
+                    console.log("navegando para scheduling")
+                    router.push("/(others_page)/scheduling" as any)
+                  }}
+                  activeOpacity={0.9}
+                >
+                  <Text style={styles.cardButtonText}>Agendar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+
+          {/* Seu Impacto */}
+          <View style={styles.impactContainer}>
+            <Text style={styles.impactHeader}>Seu Impacto</Text>
+            <View style={styles.impactRow}>
               <TouchableOpacity
-                style={styles.cardButton}
-                onPress={() => {
-                  console.log("navegando para scheduling")
-                  router.push("/(second_page)/scheduling" as any)
-                }}
+                style={[styles.statCard, shadows.md]}
                 activeOpacity={0.9}
+                onPress={() => router.push('/history' as any)}
               >
-                <Text style={styles.cardButtonText}>Agendar</Text>
+                <View style={styles.statTopRowSmall}>
+                  <View style={{ alignItems: 'center' }}>
+                    <Text style={styles.statNumber}>2</Text>
+                    <Text style={styles.statSeparator}>Doações</Text>
+                  </View>
+                  <View style={{ alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                      <FontAwesome5 name="heartbeat" size={22} color="#d32f2f" />
+                      <Text style={styles.statNumber}>8</Text>
+                    </View>
+                    <Text style={styles.statSeparator}>Vidas salvas</Text>
+                  </View>
+                </View>
+                <View style={styles.statFooterSmall}>
+                  <Text style={styles.statAction}>Acessar histórico</Text>
+                  <EvilIcons name="chevron-right" size={30} color="#cfcfcf" />
+                </View>
               </TouchableOpacity>
             </View>
           </View>
         </View>
-      </View>
 
-      {/* Seção Seu Impacto */}
-      <View style={styles.impactContainer}>
-        <Text style={styles.sectionTitle}>Seu Impacto</Text>
-        
-        <View style={styles.impactCards}>
-          <View style={styles.impactCard}>
-            <Text style={styles.impactNumber}>2</Text>
-            <Text style={styles.impactLabel}>Doações</Text>
-            <Text style={styles.impactSubtext}>Acessar histórico</Text>
-          </View>
+        {/* Seção Campanhas */}
+        <View style={styles.campaignsContainer}>
+          <Text style={styles.sectionTitle}>Campanhas</Text>
+          <Text style={styles.campaignsSubtitle}>Essas pessoas estão precisando de você!</Text>
           
-          <View style={styles.impactCard}>
-            <View style={styles.heartIconContainer}>
-              <Text style={styles.heartIcon}>❤️</Text>
-            </View>
-            <Text style={styles.impactNumber}>8</Text>
-            <Text style={styles.impactLabel}>Vidas salvas</Text>
-          </View>
-          
-          <View style={styles.impactCard}>
-            <MaterialCommunityIcons name="trophy" size={36} color="#DC2626" />
-            <Text style={styles.impactTrophyText}>Vamos lá!</Text>
-            <Text style={styles.impactSubtext}>Seja uma heroína{'\n'}e salve mais vidas</Text>
-            <Text style={styles.impactSubtext}>Às vezes, ele é{'\n'}um dos seus{'\n'}maiores{'\n'}talentos.</Text>
-            <Text style={styles.impactLabel}>Ranking</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Seção Campanhas */}
-      <View style={styles.campaignsContainer}>
-        <Text style={styles.sectionTitle}>Campanhas</Text>
-        <Text style={styles.campaignsSubtitle}>Essas pessoas estão precisando de você!</Text>
-        
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          style={styles.campaignsScroll}
-          contentContainerStyle={styles.campaignsContent}
-        >
-          {campaigns.map((campaign, index) => (
-            <View key={index} style={styles.campaignCard}>
-              <View style={styles.campaignHeader}>
-                <View style={styles.campaignUser}>
-                  <Image 
-                    source={{ uri: 'https://via.placeholder.com/40' }}
-                    style={styles.campaignAvatar}
-                  />
-                  <Text style={styles.campaignName}>{campaign.name}</Text>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            style={styles.campaignsScroll}
+            contentContainerStyle={styles.campaignsContent}
+          >
+            {campaigns.map((campaign, index) => (
+              <View key={index} style={styles.campaignCard}>
+                <View style={styles.campaignHeader}>
+                  <View style={styles.campaignUser}>
+                    <Image 
+                      source={{ uri: 'https://via.placeholder.com/40' }}
+                      style={styles.campaignAvatar}
+                    />
+                    <Text style={styles.campaignName}>{campaign.name}</Text>
+                  </View>
+                  <View style={styles.campaignBadge}>
+                    <Text style={styles.campaignBadgeText}>Doadores</Text>
+                  </View>
                 </View>
-                <View style={styles.campaignBadge}>
-                  <Text style={styles.campaignBadgeText}>Doadores</Text>
-                </View>
+                
+                <Text style={styles.campaignDonors}>{campaign.donors}</Text>
+                
+                {campaign.bloodTypes.length > 0 && (
+                  <View style={styles.campaignBloodTypes}>
+                    {campaign.bloodTypes.map((type, idx) => (
+                      <View key={idx} style={styles.campaignBloodType}>
+                        <Text style={styles.campaignBloodTypeText}>{type}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+                
+                <Text style={styles.campaignLabel}>Tipo</Text>
               </View>
-              
-              <Text style={styles.campaignDonors}>{campaign.donors}</Text>
-              
-              {campaign.bloodTypes.length > 0 && (
-                <View style={styles.campaignBloodTypes}>
-                  {campaign.bloodTypes.map((type, idx) => (
-                    <View key={idx} style={styles.campaignBloodType}>
-                      <Text style={styles.campaignBloodTypeText}>{type}</Text>
-                    </View>
-                  ))}
-                </View>
-              )}
-              
-              <Text style={styles.campaignLabel}>Tipo</Text>
-            </View>
-          ))}
-        </ScrollView>
-      </View>
-
+            ))}
+          </ScrollView>
+        </View>
       </ScrollView>
     </SafeAreaView>
   )
@@ -300,7 +304,6 @@ const styles = StyleSheet.create({
     height: 12,
     flexDirection: "column",
     overflow: "hidden",
-    alignItems: "center",
     flex: 1,
   },
   frameParent: {
@@ -381,6 +384,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e6e6e6",
     gap: 12,
   },
   profileLink: {
@@ -392,7 +397,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   profileImage: {
-    // se trocar por <Image />, ajustar width/height
     width: 48,
     height: 48,
   },
@@ -411,8 +415,8 @@ const styles = StyleSheet.create({
   },
   scheduleContainer: {
     marginTop: 16,
-    paddingHorizontal: 20,
-    width: "100%",
+    width: "90%",
+    alignSelf: "center",
   },
   scheduleTitle: {
     fontSize: 14,
@@ -465,23 +469,26 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardContent: {
+    paddingRight: 12,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "100%",
+    flexWrap: "wrap",
   },
   cardText: {
     fontSize: 16,
     color: "#111",
     fontFamily: "Roboto-Regular",
     flex: 1,
+    minWidth: 0,
     marginRight: 12,
   },
   cardButton: {
     backgroundColor: "#d32f2f",
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 24,
+    alignSelf: "flex-end",
   },
   cardButtonText: {
     color: "#fff",
@@ -492,67 +499,98 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   impactContainer: {
-    marginTop: 24,
-    paddingHorizontal: 20,
+    width: "90%",
+    alignSelf: "center",
+    marginTop: 25,
+  },
+  impactHeader: {
+    fontSize: 16,
+    color: "#8c8c8c",
+    fontFamily: "Roboto-Bold",
+    marginBottom: 12,
+  },
+  impactRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: 12,
+    marginTop: 10,
+  },
+  statCard: {
+    flexBasis: "48%",
+    minWidth: 140,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 12,
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  statTopRowSmall: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  statNumber: {
+    fontSize: 28,
+    color: "#B71c1c",
+    fontFamily: "Roboto-Bold",
+  },
+  statSeparator: {
+    fontSize: 12,
+    color: "#B71c1c",
+    marginLeft: 6,
+    marginRight: 6,
+  },
+  statFooterSmall: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
+    paddingTop: 8,
+  },
+  statAction: {
+    color: "#9b9b9b",
+    fontFamily: "Roboto-Regular",
+  },
+  statChevron: {
+    color: "#cfcfcf",
+    fontSize: 18,
+  },
+  statTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  statSmallTitle: {
+    fontSize: 14,
+    color: "#777",
+    fontFamily: "Roboto-Bold",
+  },
+  statSmallSubtitle: {
+    fontSize: 12,
+    color: "#999",
+    marginTop: 4,
+  },
+  progressBar: {
+    height: 8,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 8,
+    overflow: "hidden",
+    marginVertical: 8,
+  },
+  progressFill: {
+    width: "60%",
+    height: "100%",
+    backgroundColor: "#d32f2f",
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "700",
     color: "#333",
     marginBottom: 16,
-  },
-  impactCards: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  impactCard: {
-    flex: 1,
-    backgroundColor: "#FFF",
-    borderRadius: 12,
-    padding: 16,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  impactNumber: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: "#DC2626",
-    marginBottom: 4,
-  },
-  impactLabel: {
-    fontSize: 12,
-    color: "#666",
-    textAlign: "center",
-  },
-  impactSubtext: {
-    fontSize: 10,
-    color: "#999",
-    textAlign: "center",
-    marginTop: 4,
-    lineHeight: 14,
-  },
-  heartIconContainer: {
-    marginBottom: 4,
-  },
-  heartContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  heartIcon: {
-    fontSize: 24,
-  },
-  impactTrophyText: {
-    fontSize: 12,
-    color: "#666",
-    textAlign: "center",
-    fontWeight: "600",
-    marginTop: 4,
   },
   campaignsContainer: {
     marginTop: 24,

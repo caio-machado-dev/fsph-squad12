@@ -4,7 +4,6 @@ import React, { useState } from "react"
 import {
   Image,
   ImageSourcePropType,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -47,14 +46,13 @@ const CadastroScreen = () => {
   const [isConfirmarSenhaVisible, setIsConfirmarSenhaVisible] = useState(false)
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <Stack.Screen options={{ headerShown: false }} />
       <StatusBar barStyle="light-content" backgroundColor={colors.primaryRed} />
 
       <View style={styles.formContainer}>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
         >
           <TextInput
             style={styles.input}
@@ -151,7 +149,7 @@ const CadastroScreen = () => {
           </Text>
         </ScrollView>
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
 
@@ -176,11 +174,7 @@ const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
     backgroundColor: colors.white,
-    paddingHorizontal: 20,
     paddingVertical: 20,
-  },
-  scrollContent: {
-    padding: 20,
   },
   tabSelector: {
     flexDirection: "row",
