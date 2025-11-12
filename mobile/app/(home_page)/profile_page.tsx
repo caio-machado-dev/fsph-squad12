@@ -1,6 +1,5 @@
-import { Ionicons, Feather, EvilIcons} from '@expo/vector-icons';
+import { EvilIcons, Feather, Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router'; // Importe o useRouter!
 import React, { useState } from 'react';
 import {
@@ -15,13 +14,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const defaultAvatar = require('../../assets/images/default-avatar.png');
 const appLogo = require('../../assets/images/logo.png');
 
 export default function ProfilePage() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [darkModeEnabled, setDarkModeEnabled] = useState(true);
+  const [darkModeEnabled, setDarkModeEnabled] = useState(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
 
   // Use o useRouter do Expo Router
@@ -84,6 +84,25 @@ export default function ProfilePage() {
         </View>
 
         <View style={styles.card}>
+          {/* Nova opção: Cartão do Doador */}
+          <TouchableOpacity
+            style={styles.settingsItem}
+            onPress={() => router.push("/card_page")}
+          >
+            <View style={styles.settingsItemLeft}>
+              <Feather
+                name="credit-card"
+                size={22}
+                color="#555"
+                style={styles.settingsIcon}
+              />
+              <Text style={styles.settingsText}>Cartão do Doador</Text>
+            </View>
+            <EvilIcons name="chevron-right" size={30} color="#999" />
+          </TouchableOpacity>
+
+          <View style={styles.divider} />
+
           <View style={styles.settingsItem}>
             <View style={styles.settingsItemLeft}>
               <Ionicons
