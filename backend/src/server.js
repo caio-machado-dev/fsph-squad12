@@ -6,8 +6,6 @@ import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
 import path from "path";
-import session from "express-session";
-import passport from "passport";
 
 // Carrega variáveis do .env
 dotenv.config();
@@ -24,22 +22,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ==========================
-// CONFIGURAÇÃO DE SESSÃO
-// ==========================
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "secret_key_default",
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: process.env.NODE_ENV === "production" },
-  })
-);
-
-// Inicializa Passport (autenticação)
-app.use(passport.initialize());
-app.use(passport.session());
-
-// ==========================
 // ROTA DE VERIFICAÇÃO
 // ==========================
 app.get("/health", (req, res) => {
@@ -51,9 +33,19 @@ app.get("/health", (req, res) => {
 // ==========================
 import routes from "./routes/index.js";
 import authRoutes from "./routes/auth.js";
+import userRoutes from "./routes/user.js";
+import estoqueRoutes from "./routes/estoque.js";
+import profileRoutes from "./routes/profile.js";
+import postsRoutes from "./routes/posts.js";
+import campaignsRoutes from "./routes/campaigns.js";
 
 app.use("/api", routes);
 app.use("/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/estoque", estoqueRoutes);
+app.use("/api/profile", profileRoutes);
+app.use("/api/posts", postsRoutes);
+app.use("/api/campaigns", campaignsRoutes);
 
 // ==========================
 // MIDDLEWARE GLOBAL DE ERRO
@@ -64,16 +56,20 @@ app.use((err, req, res, next) => {
 });
 
 // ===============================
-// EXECUTA O SCRIPT DE ATUALIZAÇÃO
+// EXECUTA O SCRIPT DE ATUALIZAÇÃO DE FORMA SEGURA
 // ===============================
 import startImportSchedule from "./scripts/importarEstoque.js";
 
-try {
-  startImportSchedule();
-  console.log("Script de atualização de estoque iniciado automaticamente.");
-} catch (err) {
-  console.error("Falha ao iniciar o script de estoque:", err.message);
-}
+// Envolve a chamada em uma função autoinvocada para não bloquear o event loop
+(async () => {
+  try {
+    await startImportSchedule();
+    console.log("Script de atualização de estoque iniciado com sucesso.");
+  } catch (err) {
+    console.warn(`Atenção: Falha ao iniciar o script de estoque: ${err.message}`);
+    console.warn("Isso pode ser esperado se o banco de dados não estiver disponível no momento da inicialização.");
+  }
+})();
 
 // ===========================================
 // FUNÇÃO PARA INICIAR O SERVIDOR COM TENTATIVAS

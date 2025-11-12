@@ -9,6 +9,7 @@ CREATE TABLE usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nome_completo VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE,
+    senha VARCHAR(255),
     google_id VARCHAR(255) UNIQUE,
     telefone VARCHAR(20),
     data_nascimento DATE,
@@ -16,7 +17,8 @@ CREATE TABLE usuarios (
     tipo_sanguineo VARCHAR(5),
     foto_perfil VARCHAR(255),
     status_ativo BOOLEAN DEFAULT TRUE,
-    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    senha VARCHAR(255) NOT NULL
 );
 
 
