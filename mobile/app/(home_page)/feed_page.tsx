@@ -9,7 +9,8 @@ import {
   RefreshControl,
   Alert,
   Modal,
-  Pressable
+  Pressable,
+  StatusBar
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -176,6 +177,8 @@ export default function FeedPage() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Feed</Text>
@@ -239,7 +242,7 @@ export default function FeedPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#FFF",
   },
   header: {
     flexDirection: "row",
@@ -249,7 +252,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: "#FFF",
     borderBottomWidth: 1,
-    borderBottomColor: "#E5E5E5",
+    borderBottomColor: "#fff",
   },
   headerTitle: {
     fontSize: 24,
@@ -258,12 +261,14 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    backgroundColor: "#FFF",
   },
   emptyState: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 100,
+    backgroundColor: "#FFF",
   },
   emptyText: {
     fontSize: 18,
