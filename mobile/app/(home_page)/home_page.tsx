@@ -1,17 +1,24 @@
 import { ThemedText } from "@/components/ThemedText"
-import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, EvilIcons } from "@expo/vector-icons"
+import {
+  EvilIcons,
+  FontAwesome,
+  FontAwesome5,
+  FontAwesome6,
+  Ionicons,
+} from "@expo/vector-icons"
 import { useRouter } from "expo-router"
 import * as React from "react"
-import { Alert, Image, LogBox, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import {
+  Alert,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { shadows } from "./_shadow"
-
-// Desabilita warnings na tela
-LogBox.ignoreAllLogs(true)
-
-// Desabilita console.warn globalmente
-console.warn = () => {}
-console.error = () => {}
 
 export default function Frame116() {
   const router = useRouter()
@@ -51,141 +58,166 @@ export default function Frame116() {
   }
 
   const campaigns = [
-    { name: 'João Santos', donors: '3/10', bloodTypes: ['A+', 'A-', 'O+', 'O-'] },
-    { name: 'Sofia', donors: '45/50', bloodTypes: ['A-', 'B-', 'AB-', 'O-'] },
-    { name: 'Simone', donors: '15/30', bloodTypes: [] },
+    {
+      name: "João Santos",
+      donors: "3/10",
+      bloodTypes: ["A+", "A-", "O+", "O-"],
+    },
+    { name: "Sofia", donors: "45/50", bloodTypes: ["A-", "B-", "AB-", "O-"] },
+    { name: "Simone", donors: "15/30", bloodTypes: [] },
   ]
-
   return (
     <SafeAreaView style={styles.parent}>
-      <StatusBar barStyle="dark-content"/>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Profile header: foto e nome do usuário */}
-        <View style={styles.profileContainer}>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => router.push("/profile_page" as any)}
-            style={styles.profileLink}
-          >
-            {/* substituir require por imagem do usuário se disponível */}
-            <FontAwesome
-              name="user-circle"
-              size={48}
-              color="#d32f2f"
-              style={styles.profileImage}
-            />
-          </TouchableOpacity>
-          <View style={styles.profileInfo}>
-            <ThemedText style={styles.profileGreeting}>Olá,</ThemedText>
-            <ThemedText style={styles.profileName}>Usuário</ThemedText>
+      <StatusBar barStyle="dark-content" />
+      {/* Profile header: foto e nome do usuário */}
+      <View style={styles.profileContainer}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => router.push("/profile" as any)}
+          style={styles.profileLink}
+        >
+          {/* substituir require por imagem do usuário se disponível */}
+          <FontAwesome
+            name="user-circle"
+            size={48}
+            color="#d32f2f"
+            style={styles.profileImage}
+          />
+        </TouchableOpacity>
+        <View style={styles.profileInfo}>
+          <ThemedText style={styles.profileGreeting}>Olá,</ThemedText>
+          <ThemedText style={styles.profileName}>Usuário</ThemedText>
+        </View>
+      </View>
+
+      {/* Estoque de sangue */}
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={[styles.frameParent, shadows.xl]}>
+          <View style={styles.vidasHumanasPrecisamDeVocWrapper}>
+            <Text style={[styles.vidasHumanasPrecisam, styles.aFlexBox]}>
+              Vidas humanas precisam de você!
+            </Text>
+          </View>
+          <View style={[styles.frameGroup, styles.viewFlexBox]}>
+            <View style={styles.frameBorder}>
+              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
+                <FontAwesome6 name="droplet" size={24} color="white" />
+                <Text style={[styles.a, styles.aFlexBox]}>A-</Text>
+              </View>
+              <Line />
+              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
+                <Text style={styles.alertaTypo}>Alerta</Text>
+              </View>
+            </View>
+            <View style={styles.frameBorder}>
+              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
+                <FontAwesome6 name="droplet" size={24} color="white" />
+                <Text style={[styles.a, styles.aFlexBox]}>B+</Text>
+              </View>
+              <Line />
+              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
+                <Text style={styles.alertaTypo}>Crítico</Text>
+              </View>
+            </View>
+            <View style={[styles.frameParent2, styles.frameBorder]}>
+              <View style={[styles.vectorContainer, styles.vectorFlexBox]}>
+                <FontAwesome6 name="droplet" size={24} color="white" />
+                <Text style={[styles.a, styles.aFlexBox]}>AB+</Text>
+              </View>
+              <Line />
+              <View style={[styles.emergnciaWrapper, styles.wrapperBorder]}>
+                <Text style={[styles.emergncia, styles.alertaTypo]}>
+                  Emergência
+                </Text>
+              </View>
+            </View>
+            <View style={styles.frameBorder}>
+              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
+                <FontAwesome6 name="droplet" size={24} color="white" />
+                <Text style={[styles.a, styles.aFlexBox]}>B-</Text>
+              </View>
+              <Line />
+              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
+                <Text style={styles.alertaTypo}>Alerta</Text>
+              </View>
+            </View>
+            <View style={styles.frameBorder}>
+              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
+                <FontAwesome6 name="droplet" size={24} color="white" />
+                <Text style={[styles.a, styles.aFlexBox]}>O-</Text>
+              </View>
+              <Line />
+              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
+                <Text style={styles.alertaTypo}>Alerta</Text>
+              </View>
+            </View>
           </View>
         </View>
 
-        {/* Estoque de sangue */}
-        <View style={[styles.view, styles.viewFlexBox]}>
-          <View style={[styles.frameParent, shadows.xl]}>
-            <View style={styles.vidasHumanasPrecisamDeVocWrapper}>
-              <Text style={[styles.vidasHumanasPrecisam, styles.aFlexBox]}>
-                Vidas humanas precisam de você!
+        {/* Agendamentos */}
+        <View style={styles.scheduleContainer}>
+          <View style={styles.card}>
+            <View style={styles.cardTitleContainer}>
+              <Text style={styles.cardTitle}>Seu próximo agendamento</Text>
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardText}>
+                {nextAppointment
+                  ? `${nextAppointment.local} — ${nextAppointment.data} às ${nextAppointment.hora}`
+                  : "Sem agendamentos próximos"}
               </Text>
-            </View>
-            <View style={[styles.frameGroup, styles.viewFlexBox]}>
-              <View style={styles.frameBorder}>
-                <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                  <FontAwesome6 name="droplet" size={24} color="white" />
-                  <Text style={[styles.a, styles.aFlexBox]}>A-</Text>
-                </View>
-                <Line />
-                <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                  <Text style={styles.alertaTypo}>Alerta</Text>
-                </View>
-              </View>
-              <View style={styles.frameBorder}>
-                <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                  <FontAwesome6 name="droplet" size={24} color="white" />
-                  <Text style={[styles.a, styles.aFlexBox]}>B+</Text>
-                </View>
-                <Line />
-                <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                  <Text style={styles.alertaTypo}>Crítico</Text>
-                </View>
-              </View>
-              <View style={[styles.frameParent2, styles.frameBorder]}>
-                <View style={[styles.vectorContainer, styles.vectorFlexBox]}>
-                  <FontAwesome6 name="droplet" size={24} color="white" />
-                  <Text style={[styles.a, styles.aFlexBox]}>AB+</Text>
-                </View>
-                <Line />
-                <View style={[styles.emergnciaWrapper, styles.wrapperBorder]}>
-                  <Text style={[styles.emergncia, styles.alertaTypo]}>
-                    Emergência
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.frameBorder}>
-                <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                  <FontAwesome6 name="droplet" size={24} color="white" />
-                  <Text style={[styles.a, styles.aFlexBox]}>B-</Text>
-                </View>
-                <Line />
-                <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                  <Text style={styles.alertaTypo}>Alerta</Text>
-                </View>
-              </View>
-              <View style={styles.frameBorder}>
-                <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                  <FontAwesome6 name="droplet" size={24} color="white" />
-                  <Text style={[styles.a, styles.aFlexBox]}>O-</Text>
-                </View>
-                <Line />
-                <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                  <Text style={styles.alertaTypo}>Alerta</Text>
-                </View>
-              </View>
+              <TouchableOpacity
+                style={styles.cardButton}
+                onPress={() => {
+                  console.log("navegando para scheduling")
+                  router.push("/(others_page)/scheduling" as any)
+                }}
+                activeOpacity={0.9}
+              >
+                <Text style={styles.cardButtonText}>Agendar</Text>
+              </TouchableOpacity>
             </View>
           </View>
+        </View>
 
-          {/* Agendamentos */}
-          <View style={styles.scheduleContainer}>
-            <Text style={styles.scheduleTitle}>Seu próximo agendamento</Text>
-            <View style={styles.card}>
-              <View style={styles.cardContent}>
-                <Text style={styles.cardText}>
-                  {nextAppointment
-                    ? `${nextAppointment.local} — ${nextAppointment.data} às ${nextAppointment.hora}`
-                    : "Sem agendamentos próximos"}
-                </Text>
-                <TouchableOpacity
-                  style={styles.cardButton}
-                  onPress={() => {
-                    console.log("navegando para scheduling")
-                    router.push("/(others_page)/scheduling" as any)
-                  }}
-                  activeOpacity={0.9}
-                >
-                  <Text style={styles.cardButtonText}>Agendar</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-
-          {/* Seu Impacto */}
-          <View style={styles.impactContainer}>
-            <Text style={styles.impactHeader}>Seu Impacto</Text>
-            <View style={styles.impactRow}>
+        {/* Seu Impacto */}
+        <View style={styles.impactContainer}>
+          <Text style={styles.impactHeader}>Seu Impacto</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.impactScroll}
+          >
+            <View style={styles.impactCardWrapper}>
               <TouchableOpacity
                 style={[styles.statCard, shadows.md]}
                 activeOpacity={0.9}
-                onPress={() => router.push('/history' as any)}
+                onPress={() =>
+                  router.push("/(others_page)/history_page" as any)
+                }
               >
                 <View style={styles.statTopRowSmall}>
-                  <View style={{ alignItems: 'center' }}>
+                  <View style={{ alignItems: "center", marginLeft: 10 }}>
                     <Text style={styles.statNumber}>2</Text>
                     <Text style={styles.statSeparator}>Doações</Text>
                   </View>
-                  <View style={{ alignItems: 'center' }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                      <FontAwesome5 name="heartbeat" size={22} color="#d32f2f" />
+                  <View style={{ alignItems: "center", marginLeft: 10 }}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      <FontAwesome5
+                        name="heartbeat"
+                        size={22}
+                        color="#d32f2f"
+                      />
                       <Text style={styles.statNumber}>8</Text>
                     </View>
                     <Text style={styles.statSeparator}>Vidas salvas</Text>
@@ -197,16 +229,52 @@ export default function Frame116() {
                 </View>
               </TouchableOpacity>
             </View>
-          </View>
+            <View style={styles.impactCardWrapper}>
+              <TouchableOpacity
+                style={[styles.statCard, shadows.md]}
+                activeOpacity={0.9}
+                onPress={() => router.push("/(home_page)/ranking_page" as any)}
+              >
+                <View style={styles.statTopRow}>
+                  <View
+                    style={{
+                      alignItems: "center",
+                    }}
+                  >
+                    <Ionicons name="trophy-outline" size={30} color="#b71c1c" />
+                  </View>
+                  <View>
+                    <View style={{ marginLeft: 10, flex: 1 }}>
+                      <Text style={styles.statSmallTitle}>Vamos lá!</Text>
+                      <Text style={styles.statSmallSubtitle}>
+                        Seja uma{" "}
+                        <Text style={{ fontWeight: "700" }}>heroína</Text>
+                        {"\n"}E salve mais uma vida.
+                      </Text>
+                    </View>
+                    <View style={styles.progressBar}>
+                      <View style={styles.progressFill} />
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.statFooterSmall}>
+                  <Text style={styles.statAction}>Ranking</Text>
+                  <EvilIcons name="chevron-right" size={30} color="#cfcfcf" />
+                </View>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
         </View>
 
-        {/* Seção Campanhas */}
+        {/* Campanhas (comentado) */}
         <View style={styles.campaignsContainer}>
           <Text style={styles.sectionTitle}>Campanhas</Text>
-          <Text style={styles.campaignsSubtitle}>Essas pessoas estão precisando de você!</Text>
-          
-          <ScrollView 
-            horizontal 
+          <Text style={styles.campaignsSubtitle}>
+            Essas pessoas estão precisando de você!
+          </Text>
+
+          <ScrollView
+            horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.campaignsScroll}
             contentContainerStyle={styles.campaignsContent}
@@ -215,19 +283,15 @@ export default function Frame116() {
               <View key={index} style={styles.campaignCard}>
                 <View style={styles.campaignHeader}>
                   <View style={styles.campaignUser}>
-                    <Image 
-                      source={{ uri: 'https://via.placeholder.com/40' }}
-                      style={styles.campaignAvatar}
-                    />
                     <Text style={styles.campaignName}>{campaign.name}</Text>
                   </View>
                   <View style={styles.campaignBadge}>
                     <Text style={styles.campaignBadgeText}>Doadores</Text>
                   </View>
                 </View>
-                
+
                 <Text style={styles.campaignDonors}>{campaign.donors}</Text>
-                
+
                 {campaign.bloodTypes.length > 0 && (
                   <View style={styles.campaignBloodTypes}>
                     {campaign.bloodTypes.map((type, idx) => (
@@ -237,7 +301,7 @@ export default function Frame116() {
                     ))}
                   </View>
                 )}
-                
+
                 <Text style={styles.campaignLabel}>Tipo</Text>
               </View>
             ))}
@@ -251,7 +315,7 @@ export default function Frame116() {
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#ffff",
   },
   line: {
     borderBlockColor: "#ccc",
@@ -287,10 +351,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(218, 218, 218, 0.3)",
     borderWidth: 1,
     borderStyle: "solid",
-    overflow: "visible",
-    flex: 1,
-    minWidth: 60,
-    maxWidth: 70,
+    overflow: "hidden",
   },
   alertaTypo: {
     textAlign: "center",
@@ -304,10 +365,20 @@ const styles = StyleSheet.create({
     height: 12,
     flexDirection: "column",
     overflow: "hidden",
+    //alignItems: "center",
     flex: 1,
   },
+  scroll: {
+    flex: 1,
+    width: "100%",
+  },
+  scrollContentContainer: {
+    paddingBottom: 24,
+    paddingTop: 8,
+    alignItems: "center",
+  },
   frameParent: {
-    width: "92%",
+    width: "90%",
     borderRadius: 10,
     backgroundColor: "#d32f2f",
     height: 125,
@@ -315,10 +386,9 @@ const styles = StyleSheet.create({
     borderColor: "rgba(218, 218, 218, 0.17)",
     borderStyle: "solid",
     alignItems: "center",
-    overflow: "visible",
+    overflow: "hidden",
     alignSelf: "center",
     marginVertical: 8,
-    paddingHorizontal: 8,
   },
   vidasHumanasPrecisamDeVocWrapper: {
     width: "100%",
@@ -335,15 +405,13 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   frameGroup: {
-    gap: 6,
+    gap: 10,
     width: "100%",
     alignSelf: "stretch",
     flexDirection: "row",
-    overflow: "visible",
+    overflow: "hidden",
     alignItems: "center",
     flex: 1,
-    justifyContent: "space-between",
-    paddingHorizontal: 4,
   },
   vectorParent: {
     height: 54,
@@ -397,6 +465,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   profileImage: {
+    // se trocar por <Image />, ajustar width/height
     width: 48,
     height: 48,
   },
@@ -419,10 +488,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   scheduleTitle: {
-    fontSize: 14,
-    color: "#9b9b9b",
-    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    fontFamily: "Roboto-Bold",
     marginBottom: 8,
+    color: "#111",
   },
   input: {
     backgroundColor: "#fff",
@@ -460,8 +529,12 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,
-    padding: 16,
+    padding: 12,
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between",
     width: "100%",
+    // leve sombra
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -476,7 +549,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   cardText: {
-    fontSize: 16,
+    fontSize: 20,
     color: "#111",
     fontFamily: "Roboto-Regular",
     flex: 1,
@@ -493,11 +566,12 @@ const styles = StyleSheet.create({
   cardButtonText: {
     color: "#fff",
     fontFamily: "Roboto-Bold",
-    fontSize: 14,
+    fontSize: 16,
   },
   formWrap: {
     marginTop: 12,
   },
+  /* Seu Impacto */
   impactContainer: {
     width: "90%",
     alignSelf: "center",
@@ -516,8 +590,16 @@ const styles = StyleSheet.create({
     gap: 12,
     marginTop: 10,
   },
+  impactScroll: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    alignItems: "flex-start",
+  },
+  impactCardWrapper: {
+    marginRight: 12,
+  },
   statCard: {
-    flexBasis: "48%",
+    //flexBasis: "48%",
     minWidth: 140,
     backgroundColor: "#fff",
     borderRadius: 12,
@@ -586,16 +668,10 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "#d32f2f",
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#333",
-    marginBottom: 16,
-  },
   campaignsContainer: {
-    marginTop: 24,
-    paddingHorizontal: 20,
-    marginBottom: 20,
+    marginTop: "auto",
+    paddingHorizontal: "4%",
+    marginBottom: "auto",
   },
   campaignsSubtitle: {
     fontSize: 14,
@@ -679,5 +755,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: "#999",
     marginTop: 4,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#333",
+    marginBottom: 16,
   },
 })
