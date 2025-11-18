@@ -7,9 +7,9 @@ import { getConnection } from "../config/database.js";
  */
 async function findOrCreateUserByGoogleId(googleProfile) {
   const { sub: google_id, name: nome_completo, email, picture: foto_perfil } = googleProfile;
-
-  const connection = await getConnection();
+  let connection;
   try {
+    connection = await getConnection();
     // 1. Tenta encontrar o usuário pelo google_id
     let [rows] = await connection.query(
       "SELECT * FROM usuarios WHERE google_id = ?",
@@ -41,16 +41,15 @@ async function findOrCreateUserByGoogleId(googleProfile) {
     console.error("Erro no serviço de usuário (findOrCreate):", error);
     throw error; // Propaga o erro para ser tratado no controller
   } finally {
-    if (connection) {
-      await connection.end();
-    }
+    if (connection) connection.release();
   }
 }
 
 async function createUser(userData) {
   const { nome_completo, email, senha } = userData;
-  const connection = await getConnection();
+  let connection;
   try {
+    connection = await getConnection();
     const newUser = {
       nome_completo,
       email,
@@ -66,13 +65,14 @@ async function createUser(userData) {
     console.error("Erro ao criar usuário:", error);
     throw error;
   } finally {
-    if (connection) await connection.end();
+    if (connection) connection.release();
   }
 }
 
 async function findUserByEmail(email) {
-  const connection = await getConnection();
+  let connection;
   try {
+    connection = await getConnection();
     const [rows] = await connection.query(
       "SELECT * FROM usuarios WHERE email = ?",
       [email]
@@ -82,13 +82,14 @@ async function findUserByEmail(email) {
     console.error("Erro ao buscar usuário por email:", error);
     throw error;
   } finally {
-    if (connection) await connection.end();
+    if (connection) connection.release();
   }
 }
 
 async function findUserById(id) {
-  const connection = await getConnection();
+  let connection;
   try {
+    connection = await getConnection();
     const [rows] = await connection.query(
       "SELECT * FROM usuarios WHERE id_usuario = ?",
       [id]
@@ -98,17 +99,16 @@ async function findUserById(id) {
     console.error("Erro ao buscar usuário por ID:", error);
     throw error;
   } finally {
-    if (connection) await connection.end();
+    if (connection) connection.release();
   }
 }
 
 async function updateUserById(id, updateData) {
-  let connection; // Declarado aqui para ser acessível no finally
+  let connection;
   try {
     connection = await getConnection();
     // Garante que o objeto de atualização não esteja vazio
     if (Object.keys(updateData).length === 0) {
-      // Reutiliza a conexão existente para buscar o usuário
       const [rows] = await connection.query("SELECT * FROM usuarios WHERE id_usuario = ?", [id]);
       return rows.length > 0 ? rows[0] : null;
     }
@@ -118,14 +118,13 @@ async function updateUserById(id, updateData) {
       id,
     ]);
 
-    // Reutiliza a conexão para buscar o usuário atualizado
     const [rows] = await connection.query("SELECT * FROM usuarios WHERE id_usuario = ?", [id]);
     return rows.length > 0 ? rows[0] : null;
   } catch (error) {
     console.error("Erro ao atualizar usuário por ID:", error);
     throw error;
   } finally {
-    if (connection) await connection.end();
+    if (connection) connection.release();
   }
 }
 
