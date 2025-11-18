@@ -64,8 +64,17 @@ export default function Frame116() {
       bloodTypes: ["A+", "A-", "O+", "O-"],
     },
     { name: "Sofia", donors: "45/50", bloodTypes: ["A-", "B-", "AB-", "O-"] },
-    { name: "Simone", donors: "15/30", bloodTypes: [] },
+    { name: "Simone", donors: "15/30", bloodTypes: ["O-"] },
   ]
+
+  const stockLevels: Record<string, string> = {
+    "A-": "Alerta",
+    "B+": "Crítico",
+    "AB+": "Emergência",
+    "B-": "Alerta",
+    "O-": "Alerta",
+    "A+": "Alerta",
+  }
   return (
     <SafeAreaView style={styles.parent}>
       <StatusBar barStyle="dark-content" />
@@ -102,62 +111,38 @@ export default function Frame116() {
               Vidas humanas precisam de você!
             </Text>
           </View>
-          <View style={[styles.frameGroup, styles.viewFlexBox]}>
-            <View style={styles.frameBorder}>
-              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>A-</Text>
-              </View>
-              <Line />
-              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                <Text style={styles.alertaTypo}>Alerta</Text>
-              </View>
-            </View>
-            <View style={styles.frameBorder}>
-              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>B+</Text>
-              </View>
-              <Line />
-              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                <Text style={styles.alertaTypo}>Crítico</Text>
-              </View>
-            </View>
-            <View style={[styles.frameParent2, styles.frameBorder]}>
-              <View style={[styles.vectorContainer, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>AB+</Text>
-              </View>
-              <Line />
-              <View style={[styles.emergnciaWrapper, styles.wrapperBorder]}>
-                <Text style={[styles.emergncia, styles.alertaTypo]}>
-                  Emergência
-                </Text>
-              </View>
-            </View>
-            <View style={styles.frameBorder}>
-              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>B-</Text>
-              </View>
-              <Line />
-              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                <Text style={styles.alertaTypo}>Alerta</Text>
-              </View>
-            </View>
-            <View style={styles.frameBorder}>
-              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>O-</Text>
-              </View>
-              <Line />
-              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                <Text style={styles.alertaTypo}>Alerta</Text>
-              </View>
-            </View>
-          </View>
-        </View>
 
+          <ScrollView
+            horizontal
+            nestedScrollEnabled={true}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.frameGroup}
+          >
+            {Object.keys(stockLevels).map((bloodType) => {
+              const level = stockLevels[bloodType] ?? "Normal"
+              return (
+                <View key={bloodType} style={styles.frameBorder}>
+                  <View
+                    style={[
+                      styles.vectorParent,
+                      styles.vectorFlexBox,
+                      styles.bloodTop,
+                    ]}
+                  >
+                    <FontAwesome6 name="droplet" size={24} color="white" />
+                    <Text style={[styles.a, styles.aFlexBox]}>{bloodType}</Text>
+                  </View>
+                  <Line />
+                  <View style={styles.badgeContainer}>
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>{level}</Text>
+                    </View>
+                  </View>
+                </View>
+              )
+            })}
+          </ScrollView>
+        </View>
         {/* Agendamentos */}
         <View style={styles.scheduleContainer}>
           <View style={styles.card}>
@@ -189,6 +174,7 @@ export default function Frame116() {
           <Text style={styles.impactHeader}>Seu Impacto</Text>
           <ScrollView
             horizontal
+            nestedScrollEnabled={true}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.impactScroll}
           >
@@ -239,14 +225,16 @@ export default function Frame116() {
                   <View
                     style={{
                       alignItems: "center",
+                      marginRight: 10,
                     }}
                   >
                     <Ionicons name="trophy-outline" size={30} color="#b71c1c" />
                   </View>
                   <View>
-                    <View style={{ marginLeft: 10, flex: 1 }}>
-                      <Text style={styles.statSmallTitle}>Vamos lá!</Text>
+                    <View style={{ width: "100%" }}>
+                      {/* <Text style={styles.statSmallTitle}>Vamos lá!</Text> */}
                       <Text style={styles.statSmallSubtitle}>
+                        Vamos lá!{"\n"}
                         Seja uma{" "}
                         <Text style={{ fontWeight: "700" }}>heroína</Text>
                         {"\n"}E salve mais uma vida.
@@ -268,7 +256,7 @@ export default function Frame116() {
 
         {/* Campanhas (comentado) */}
         <View style={styles.campaignsContainer}>
-          <Text style={styles.sectionTitle}>Campanhas</Text>
+          <Text style={styles.impactHeader}>Campanhas</Text>
           <Text style={styles.campaignsSubtitle}>
             Essas pessoas estão precisando de você!
           </Text>
@@ -289,9 +277,9 @@ export default function Frame116() {
                     <Text style={styles.campaignBadgeText}>Doadores</Text>
                   </View>
                 </View>
-
                 <Text style={styles.campaignDonors}>{campaign.donors}</Text>
 
+                <Text style={styles.campaignLabel}>Tipo {"\n"}</Text>
                 {campaign.bloodTypes.length > 0 && (
                   <View style={styles.campaignBloodTypes}>
                     {campaign.bloodTypes.map((type, idx) => (
@@ -301,8 +289,6 @@ export default function Frame116() {
                     ))}
                   </View>
                 )}
-
-                <Text style={styles.campaignLabel}>Tipo</Text>
               </View>
             ))}
           </ScrollView>
@@ -327,7 +313,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   aFlexBox: {
-    textAlign: "left",
+    textAlign: "center",
     color: "#fff",
   },
   vectorFlexBox: {
@@ -335,39 +321,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    overflow: "hidden",
   },
-  wrapperBorder: {
-    height: "auto",
-    padding: 3,
-    borderStyle: "solid",
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
-  },
+
   frameBorder: {
-    height: "90%",
-    borderRadius: 12,
+    minWidth: 120,
+    alignItems: "center",
+    borderRadius: 10,
     borderColor: "rgba(218, 218, 218, 0.3)",
     borderWidth: 1,
     borderStyle: "solid",
     overflow: "hidden",
+    marginRight: 12,
+    paddingVertical: 8,
   },
-  alertaTypo: {
-    textAlign: "center",
-    fontSize: 14,
-    color: "#fff",
-    fontFamily: "Roboto-Bold",
-    fontWeight: "700",
-  },
-  view: {
-    width: "100%",
-    height: 12,
-    flexDirection: "column",
-    overflow: "hidden",
-    //alignItems: "center",
-    flex: 1,
-  },
+
   scroll: {
     flex: 1,
     width: "100%",
@@ -406,12 +373,10 @@ const styles = StyleSheet.create({
   },
   frameGroup: {
     gap: 10,
-    width: "100%",
-    alignSelf: "stretch",
     flexDirection: "row",
     overflow: "hidden",
     alignItems: "center",
-    flex: 1,
+    paddingHorizontal: 8,
   },
   vectorParent: {
     height: 54,
@@ -578,7 +543,7 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
   impactHeader: {
-    fontSize: 16,
+    fontSize: 18,
     color: "#8c8c8c",
     fontFamily: "Roboto-Bold",
     marginBottom: 12,
@@ -597,9 +562,30 @@ const styles = StyleSheet.create({
   },
   impactCardWrapper: {
     marginRight: 12,
+    flex: 1,
+  },
+  bloodTop: {
+    paddingVertical: 10,
+  },
+  badgeContainer: {
+    alignItems: "center",
+    paddingVertical: 6,
+  },
+  badge: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  badgeText: {
+    color: "#d32f2f",
+    fontFamily: "Roboto-Bold",
+    fontWeight: "700",
+    fontSize: 12,
   },
   statCard: {
-    //flexBasis: "48%",
+    flexBasis: "48%",
+    height: 140,
     minWidth: 140,
     backgroundColor: "#fff",
     borderRadius: 12,
@@ -612,6 +598,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 8,
+    width: "auto",
+    height: "60%",
   },
   statNumber: {
     fontSize: 28,
@@ -643,8 +631,10 @@ const styles = StyleSheet.create({
   },
   statTopRow: {
     flexDirection: "row",
+    width: "auto",
     alignItems: "center",
     marginBottom: 8,
+    height: "60%",
   },
   statSmallTitle: {
     fontSize: 14,
@@ -677,6 +667,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     marginBottom: 16,
+    fontFamily: "Roboto-Regular",
+    padding: 4,
   },
   campaignsScroll: {
     marginHorizontal: -20,
@@ -688,6 +680,7 @@ const styles = StyleSheet.create({
   },
   campaignCard: {
     width: 160,
+    height: 200,
     backgroundColor: "#FFF",
     borderRadius: 12,
     padding: 16,
@@ -724,9 +717,10 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   campaignBadgeText: {
-    fontSize: 8,
+    fontSize: 11,
     color: "#DC2626",
     fontWeight: "600",
+    fontFamily: "Roboto",
   },
   campaignDonors: {
     fontSize: 20,
@@ -747,12 +741,13 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   campaignBloodTypeText: {
-    fontSize: 10,
+    fontSize: 11,
     color: "#DC2626",
     fontWeight: "600",
   },
   campaignLabel: {
-    fontSize: 10,
+    fontSize: 11,
+    fontFamily: "Roboto",
     color: "#999",
     marginTop: 4,
   },

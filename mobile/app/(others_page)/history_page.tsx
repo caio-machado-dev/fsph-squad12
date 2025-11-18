@@ -1,4 +1,4 @@
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -31,7 +31,7 @@ const donationHistory = [
 // Componente para exibir os itens com a estilização
 const DonationItem = ({ item }: { item: { date: string, time: string } }) => (
   <View style={styles.card}>
-    <FontAwesome5 name="tint" size={24} color="#d32f2f" style={styles.cardIcon} />
+    <FontAwesome6 name="droplet" size={24} color="#d32f2f" style={styles.cardIcon} />
     <View style={styles.cardTextContainer}>
       <Text style={styles.cardDate}>{item.date}</Text>
       <Text style={styles.cardTime}>{item.time}</Text>
@@ -78,7 +78,7 @@ export default function HistoryPage() {
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
