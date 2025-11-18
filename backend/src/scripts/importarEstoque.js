@@ -56,7 +56,7 @@ async function inserirDados(dados) {
   } catch (erro) {
     console.error("Erro ao inserir dados:", erro.message);
   } finally {
-    await connection.end();
+    connection.release();
   }
 }
 
