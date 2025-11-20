@@ -16,56 +16,124 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { shadows } from "./_shadow"
+import api from "@/src/services/api"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function Frame116() {
   const router = useRouter()
-  const [local, setLocal] = React.useState("")
-  const [data, setData] = React.useState("")
-  const [hora, setHora] = React.useState("")
-  const [nextAppointment, setNextAppointment] = React.useState<null | {
-    local: string
-    data: string
-    hora: string
-  }>(null)
-  const [showForm, setShowForm] = React.useState(false)
+  const [loading, setLoading] = React.useState(true);
+  const [userInfo, setUserInfo] = React.useState<any>(null);
+  const [estoque, setEstoque] = React.useState<any[]>([]);
+  const [nextAppointment, setNextAppointment] = React.useState<any>(null);
+  const [campaigns, setCampaigns] = React.useState<any[]>([]);
 
-  const handleSchedule = () => {
-    if (!local.trim() || !data.trim() || !hora.trim()) {
-      Alert.alert(
-        "Preencha todos os campos",
-        "Por favor informe local, data e hora para o agendamento."
-      )
-      return
+  // UseFocusEffect para recarregar dados sempre que a tela ganhar foco (ex: voltar do agendamento)
+  useFocusEffect(
+    React.useCallback(() => {
+      loadData();
+    }, [])
+  );
+
+  const loadData = async () => {
+    try {
+        setLoading(true);
+        // 1. Carregar dados do usuário
+        // Tenta pegar do storage primeiro para ser mais rápido, mas idealmente valida token
+        const token = await AsyncStorage.getItem('user_token');
+        if (!token) {
+            router.replace('/(login_page)/login');
+            return;
+        }
+
+        // Busca perfil
+        try {
+            // Backend mount: app.use("/api/users", userRoutes); -> Rota: /me
+            const profileRes = await api.get('/api/users/me');
+            setUserInfo(profileRes.data);
+        } catch (e) {
+            console.log("Erro ao carregar perfil", e);
+        }
+
+        // 2. Carregar Estoque
+        try {
+            // Backend mount: app.use("/api/estoque", estoqueRoutes);
+            const estoqueRes = await api.get('/api/estoque');
+            setEstoque(estoqueRes.data || []);
+        } catch (e) {
+            console.log("Erro ao carregar estoque", e);
+        }
+
+        // 3. Carregar Agendamentos (pegar o próximo)
+        try {
+            // Backend mount: app.use("/api/appointments", appointmentsRoutes);
+            const apptRes = await api.get('/api/appointments');
+            // Filtra apenas agendamentos futuros ou pendentes
+            const futureAppts = apptRes.data.filter((a: any) =>
+                new Date(a.data_agendamento) > new Date() && a.status_agendamento !== 'Cancelado'
+            );
+            // Ordena e pega o primeiro
+            if (futureAppts.length > 0) {
+                // Supondo que o back já retorna ordenado, mas garantindo
+                futureAppts.sort((a: any, b: any) => new Date(a.data_agendamento).getTime() - new Date(b.data_agendamento).getTime());
+
+                const next = futureAppts[0];
+                const dateObj = new Date(next.data_agendamento);
+                // Formata data e hora simples
+                setNextAppointment({
+                    local: next.local_agendamento,
+                    data: dateObj.toLocaleDateString('pt-BR'),
+                    hora: dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                });
+            } else {
+                setNextAppointment(null);
+            }
+        } catch (e) {
+             console.log("Erro ao carregar agendamentos", e);
+        }
+
+        // 4. Carregar Campanhas
+        try {
+             // Backend mount: app.use("/api/campaigns", campaignsRoutes);
+             const campaignsRes = await api.get('/api/campaigns');
+             setCampaigns(campaignsRes.data || []);
+        } catch (e) {
+             console.log("Erro ao carregar campanhas", e);
+        }
+
+    } catch (error) {
+        console.error("Erro geral no loadData:", error);
+    } finally {
+        setLoading(false);
     }
-
-    setNextAppointment({ local, data, hora })
-    Alert.alert(
-      "Agendamento confirmado",
-      `Local: ${local}\nData: ${data}\nHora: ${hora}`
-    )
-    // limpar campos e fechar formulário
-    setLocal("")
-    setData("")
-    setHora("")
-    setShowForm(false)
-  }
+  };
 
   const Line = () => {
     return <View style={styles.line} />
   }
 
-  const campaigns = [
-    {
-      name: "João Santos",
-      donors: "3/10",
-      bloodTypes: ["A+", "A-", "O+", "O-"],
-    },
-    { name: "Sofia", donors: "45/50", bloodTypes: ["A-", "B-", "AB-", "O-"] },
-    { name: "Simone", donors: "15/30", bloodTypes: [] },
-  ]
+  // Mapeamento de níveis de alerta para texto e cor (simplificado)
+  const getAlertLevel = (situacao: string) => {
+      switch(situacao?.toLowerCase()) {
+          case 'critico': return { text: 'Crítico', color: '#D32F2F' }; // Vermelho
+          case 'alerta': return { text: 'Alerta', color: '#F57C00' };   // Laranja
+          case 'estavel': return { text: 'Estável', color: '#388E3C' }; // Verde
+          default: return { text: '---', color: '#999' };
+      }
+  };
+
+  if (loading && !userInfo) {
+      return (
+          <View style={[styles.parent, { justifyContent: 'center', alignItems: 'center' }]}>
+              <ActivityIndicator size="large" color="#D32F2F" />
+          </View>
+      )
+  }
+
   return (
     <SafeAreaView style={styles.parent}>
       <StatusBar barStyle="dark-content" />
@@ -73,20 +141,30 @@ export default function Frame116() {
       <View style={styles.profileContainer}>
         <TouchableOpacity
           activeOpacity={0.8}
-          onPress={() => router.push("/profile" as any)}
+          onPress={() => router.push("/(home_page)/profile_page" as any)}
           style={styles.profileLink}
         >
-          {/* substituir require por imagem do usuário se disponível */}
-          <FontAwesome
-            name="user-circle"
-            size={48}
-            color="#d32f2f"
-            style={styles.profileImage}
-          />
+          {userInfo?.foto_perfil ? (
+              <View style={{ width: 48, height: 48, borderRadius: 24, overflow: 'hidden' }}>
+                {/* Aqui você usaria <Image source={{ uri: userInfo.foto_perfil }} ... /> */}
+                <FontAwesome
+                    name="user-circle"
+                    size={48}
+                    color="#d32f2f"
+                />
+              </View>
+          ) : (
+            <FontAwesome
+                name="user-circle"
+                size={48}
+                color="#d32f2f"
+                style={styles.profileImage}
+            />
+          )}
         </TouchableOpacity>
         <View style={styles.profileInfo}>
           <ThemedText style={styles.profileGreeting}>Olá,</ThemedText>
-          <ThemedText style={styles.profileName}>Usuário</ThemedText>
+          <ThemedText style={styles.profileName}>{userInfo?.nome_completo || "Doador"}</ThemedText>
         </View>
       </View>
 
@@ -102,59 +180,28 @@ export default function Frame116() {
               Vidas humanas precisam de você!
             </Text>
           </View>
+
+          {/* Grid de Estoque Dinâmico */}
           <View style={[styles.frameGroup, styles.viewFlexBox]}>
-            <View style={styles.frameBorder}>
-              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>A-</Text>
-              </View>
-              <Line />
-              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                <Text style={styles.alertaTypo}>Alerta</Text>
-              </View>
-            </View>
-            <View style={styles.frameBorder}>
-              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>B+</Text>
-              </View>
-              <Line />
-              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                <Text style={styles.alertaTypo}>Crítico</Text>
-              </View>
-            </View>
-            <View style={[styles.frameParent2, styles.frameBorder]}>
-              <View style={[styles.vectorContainer, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>AB+</Text>
-              </View>
-              <Line />
-              <View style={[styles.emergnciaWrapper, styles.wrapperBorder]}>
-                <Text style={[styles.emergncia, styles.alertaTypo]}>
-                  Emergência
-                </Text>
-              </View>
-            </View>
-            <View style={styles.frameBorder}>
-              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>B-</Text>
-              </View>
-              <Line />
-              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                <Text style={styles.alertaTypo}>Alerta</Text>
-              </View>
-            </View>
-            <View style={styles.frameBorder}>
-              <View style={[styles.vectorParent, styles.vectorFlexBox]}>
-                <FontAwesome6 name="droplet" size={24} color="white" />
-                <Text style={[styles.a, styles.aFlexBox]}>O-</Text>
-              </View>
-              <Line />
-              <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
-                <Text style={styles.alertaTypo}>Alerta</Text>
-              </View>
-            </View>
+            {estoque.length > 0 ? (
+                estoque.slice(0, 5).map((item, index) => {
+                    const alert = getAlertLevel(item.situacao);
+                    return (
+                        <View key={index} style={styles.frameBorder}>
+                            <View style={[styles.vectorParent, styles.vectorFlexBox]}>
+                                <FontAwesome6 name="droplet" size={24} color="white" />
+                                <Text style={[styles.a, styles.aFlexBox]}>{item.grupoabo}{item.fatorrh}</Text>
+                            </View>
+                            <Line />
+                            <View style={[styles.alertaWrapper, styles.wrapperBorder]}>
+                                <Text style={[styles.alertaTypo, { color: '#FFF' }]}>{item.situacao}</Text>
+                            </View>
+                        </View>
+                    )
+                })
+            ) : (
+                <Text style={{ color: 'white' }}>Carregando estoque...</Text>
+            )}
           </View>
         </View>
 
@@ -202,6 +249,7 @@ export default function Frame116() {
               >
                 <View style={styles.statTopRowSmall}>
                   <View style={{ alignItems: "center", marginLeft: 10 }}>
+                    {/* Dados mockados por enquanto, precisa de endpoint específico ou cálculo no front */}
                     <Text style={styles.statNumber}>2</Text>
                     <Text style={styles.statSeparator}>Doações</Text>
                   </View>
@@ -266,7 +314,7 @@ export default function Frame116() {
           </ScrollView>
         </View>
 
-        {/* Campanhas (comentado) */}
+        {/* Campanhas */}
         <View style={styles.campaignsContainer}>
           <Text style={styles.sectionTitle}>Campanhas</Text>
           <Text style={styles.campaignsSubtitle}>
@@ -279,32 +327,26 @@ export default function Frame116() {
             style={styles.campaignsScroll}
             contentContainerStyle={styles.campaignsContent}
           >
-            {campaigns.map((campaign, index) => (
-              <View key={index} style={styles.campaignCard}>
-                <View style={styles.campaignHeader}>
-                  <View style={styles.campaignUser}>
-                    <Text style={styles.campaignName}>{campaign.name}</Text>
-                  </View>
-                  <View style={styles.campaignBadge}>
-                    <Text style={styles.campaignBadgeText}>Doadores</Text>
-                  </View>
+            {campaigns.length > 0 ? (
+                campaigns.map((campaign, index) => (
+                <View key={index} style={styles.campaignCard}>
+                    <View style={styles.campaignHeader}>
+                    <View style={styles.campaignUser}>
+                        <Text style={styles.campaignName} numberOfLines={1}>{campaign.nome_campanha}</Text>
+                    </View>
+                    <View style={styles.campaignBadge}>
+                        <Text style={styles.campaignBadgeText}>Urgente</Text>
+                    </View>
+                    </View>
+
+                    <Text style={styles.campaignDonors} numberOfLines={2}>{campaign.descricao}</Text>
+
+                    <Text style={styles.campaignLabel}>{campaign.local_campanha}</Text>
                 </View>
-
-                <Text style={styles.campaignDonors}>{campaign.donors}</Text>
-
-                {campaign.bloodTypes.length > 0 && (
-                  <View style={styles.campaignBloodTypes}>
-                    {campaign.bloodTypes.map((type, idx) => (
-                      <View key={idx} style={styles.campaignBloodType}>
-                        <Text style={styles.campaignBloodTypeText}>{type}</Text>
-                      </View>
-                    ))}
-                  </View>
-                )}
-
-                <Text style={styles.campaignLabel}>Tipo</Text>
-              </View>
-            ))}
+                ))
+            ) : (
+                <Text style={{ paddingHorizontal: 20 }}>Nenhuma campanha ativa no momento.</Text>
+            )}
           </ScrollView>
         </View>
       </ScrollView>
@@ -352,10 +394,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: "solid",
     overflow: "hidden",
+    width: 60,
+    marginHorizontal: 2,
   },
   alertaTypo: {
     textAlign: "center",
-    fontSize: 14,
+    fontSize: 10, // reduzido para caber
     color: "#fff",
     fontFamily: "Roboto-Bold",
     fontWeight: "700",
@@ -405,17 +449,19 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   frameGroup: {
-    gap: 10,
+    gap: 5,
     width: "100%",
     alignSelf: "stretch",
     flexDirection: "row",
     overflow: "hidden",
     alignItems: "center",
     flex: 1,
+    justifyContent: 'space-around', // distribui melhor
+    paddingHorizontal: 5,
   },
   vectorParent: {
     height: 54,
-    width: 57,
+    width: '100%', // ajustado
   },
   vectorIcon: {
     width: 17,
@@ -423,7 +469,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   a: {
-    fontSize: 24,
+    fontSize: 18, // reduzido levemente
     fontFamily: "Roboto-Regular",
   },
   alertaWrapper: {
@@ -729,7 +775,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   campaignDonors: {
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: "700",
     color: "#333",
     marginBottom: 8,

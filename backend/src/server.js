@@ -38,6 +38,9 @@ import estoqueRoutes from "./routes/estoque.js";
 import profileRoutes from "./routes/profile.js";
 import postsRoutes from "./routes/posts.js";
 import campaignsRoutes from "./routes/campaigns.js";
+import appointmentsRoutes from "./routes/appointments.js";
+import historyRoutes from "./routes/history.js";
+import rankingRoutes from "./routes/ranking.js";
 
 app.use("/api", routes);
 app.use("/auth", authRoutes);
@@ -46,6 +49,9 @@ app.use("/api/estoque", estoqueRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/posts", postsRoutes);
 app.use("/api/campaigns", campaignsRoutes);
+app.use("/api/appointments", appointmentsRoutes);
+app.use("/api/history", historyRoutes);
+app.use("/api/ranking", rankingRoutes);
 
 // ==========================
 // MIDDLEWARE GLOBAL DE ERRO
