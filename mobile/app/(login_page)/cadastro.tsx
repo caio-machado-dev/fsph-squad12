@@ -2,6 +2,7 @@ import { Feather } from "@expo/vector-icons"
 import { Stack, useRouter } from "expo-router"
 import React, { useState } from "react"
 import {
+  ActivityIndicator,
   Image,
   ImageSourcePropType,
   ScrollView,
@@ -11,7 +12,9 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native"
+import api from "@/src/services/api";
 
 export function getServerSideProps() {
   console.log("SSR redirect to / (login_page)/splash")
@@ -44,6 +47,52 @@ const CadastroScreen = () => {
   const [confirmarSenha, setConfirmarSenha] = useState("")
   const [isSenhaVisible, setIsSenhaVisible] = useState(false)
   const [isConfirmarSenhaVisible, setIsConfirmarSenhaVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handleRegister = async () => {
+    if (!nome || !email || !senha || !confirmarSenha) {
+      Alert.alert("Erro", "Por favor, preencha todos os campos.");
+      return;
+    }
+
+    if (senha !== confirmarSenha) {
+      Alert.alert("Erro", "As senhas não coincidem.");
+      return;
+    }
+
+    // Validação básica de senha (ex: min 6 chars)
+    if (senha.length < 6) {
+       Alert.alert("Erro", "A senha deve ter no mínimo 6 caracteres.");
+       return;
+    }
+
+    setLoading(true);
+    try {
+      // O endpoint de registro espera { nome_completo, email, senha }
+      // O banco de dados pede 'nome_completo', mas o frontend usa 'nome'. Ajustando o payload.
+      const payload = {
+        nome_completo: nome,
+        email,
+        senha
+      };
+
+      const response = await api.post('/auth/register', payload);
+
+      if (response.status === 201 || response.status === 200) {
+        Alert.alert("Sucesso", "Conta criada com sucesso! Faça login para continuar.", [
+          { text: "OK", onPress: () => router.replace("/(login_page)/login") }
+        ]);
+      } else {
+        Alert.alert("Erro", "Não foi possível criar a conta. Tente novamente.");
+      }
+    } catch (error: any) {
+      console.error("Erro no registro:", error);
+      const msg = error.response?.data?.error || "Erro ao conectar ao servidor.";
+      Alert.alert("Erro", msg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.safeArea}>
@@ -120,9 +169,17 @@ const CadastroScreen = () => {
           <TouchableOpacity
             style={styles.createAccountButton}
             activeOpacity={0.8}
+            onPress={handleRegister}
+            disabled={loading}
           >
-            <Text style={styles.createAccountButtonText}>Criar conta</Text>
-            <Feather name="arrow-up-right" size={20} color={colors.white} />
+             {loading ? (
+                <ActivityIndicator color={colors.white} />
+              ) : (
+                <>
+                  <Text style={styles.createAccountButtonText}>Criar conta</Text>
+                  <Feather name="arrow-up-right" size={20} color={colors.white} />
+                </>
+              )}
           </TouchableOpacity>
 
           <View style={styles.dividerContainer}>
