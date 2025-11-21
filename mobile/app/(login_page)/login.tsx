@@ -16,7 +16,7 @@ import {
   View,
   StatusBar,
 } from "react-native"
-import { getLogin } from "./_auth"
+import { getLogin } from "@/src/services/auth/auth"
 import api from "@/src/services/api";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

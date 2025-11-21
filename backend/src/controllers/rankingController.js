@@ -1,11 +1,10 @@
 import { getConnection } from "../config/database.js";
 
 export async function getRanking(req, res) {
-  const connection = await getConnection();
+  const pool = await getConnection();
   try {
     // Ranking baseado no total de doações confirmadas na tabela contador_doacoes
-    // Se essa tabela não estiver populada, poderia ser um COUNT na tabela doacoes
-    const [rows] = await connection.query(
+    const [rows] = await pool.query(
         `SELECT
             u.nome_completo as nome,
             u.foto_perfil,
@@ -18,7 +17,7 @@ export async function getRanking(req, res) {
 
     // Se a tabela contador_doacoes estiver vazia, fallback para count na tabela doacoes
     if (rows.length === 0) {
-        const [fallbackRows] = await connection.query(
+        const [fallbackRows] = await pool.query(
             `SELECT
                 u.nome_completo as nome,
                 u.foto_perfil,
@@ -37,7 +36,5 @@ export async function getRanking(req, res) {
   } catch (error) {
     console.error("Erro ao buscar ranking:", error);
     res.status(500).json({ error: "Erro interno ao buscar ranking." });
-  } finally {
-    connection.release();
   }
 }

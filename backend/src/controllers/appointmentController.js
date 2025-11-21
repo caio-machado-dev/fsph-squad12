@@ -2,7 +2,10 @@ import { getConnection } from "../config/database.js";
 
 // Cria um novo agendamento e salva a pré-triagem
 export async function createAppointment(req, res) {
-  const connection = await getConnection();
+  const pool = await getConnection();
+  // Para transações, precisamos de uma conexão dedicada
+  const connection = await pool.getConnection();
+
   try {
     const { id } = req.user; // ID do usuário vindo do token
     const {
@@ -10,7 +13,6 @@ export async function createAppointment(req, res) {
       data_agendamento, // YYYY-MM-DD HH:mm:ss
       tipo_agendamento, // 'individual', 'campaign', 'boneMarrow'
       local_agendamento,
-      cidade, // opcional, se quiser salvar separado
       // Dados da pré-triagem
       pre_triagem
     } = req.body;
@@ -31,8 +33,6 @@ export async function createAppointment(req, res) {
     if (pre_triagem) {
         const { peso, altura, pressao_arterial, apto_doacao, observacoes, perguntas_respostas } = pre_triagem;
 
-        // Se 'perguntas_respostas' for um objeto JSON, converta para string para salvar em 'observacoes' ou crie campo específico
-        // Aqui vamos simplificar salvando em observacoes se não tiver campo específico
         const obsFinal = observacoes || JSON.stringify(perguntas_respostas || {});
 
         await connection.query(
@@ -55,18 +55,19 @@ export async function createAppointment(req, res) {
     console.error("Erro ao criar agendamento:", error);
     res.status(500).json({ error: "Erro interno ao processar agendamento." });
   } finally {
+    // Libera a conexão de volta pro pool
     connection.release();
   }
 }
 
 // Lista agendamentos do usuário
 export async function getMyAppointments(req, res) {
-  const connection = await getConnection();
+  const pool = await getConnection();
   try {
     const { id } = req.user;
 
-    // Busca agendamentos ordenados por data
-    const [rows] = await connection.query(
+    // Query simples pode usar o pool direto
+    const [rows] = await pool.query(
         `SELECT * FROM agendamentos
          WHERE id_usuario = ?
          ORDER BY data_agendamento DESC`,
@@ -77,7 +78,6 @@ export async function getMyAppointments(req, res) {
   } catch (error) {
     console.error("Erro ao buscar agendamentos:", error);
     res.status(500).json({ error: "Erro interno ao buscar agendamentos." });
-  } finally {
-    connection.release();
   }
+  // Não precisa liberar pool.query
 }

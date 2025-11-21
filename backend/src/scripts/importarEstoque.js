@@ -12,7 +12,7 @@ const SAVE_LOCAL = (process.env.SAVE_LOCAL || 'false').toLowerCase() === 'true';
 // ============================================================
 
 // Garante que a tabela exista
-async function ensureTableExists(connection) {
+async function ensureTableExists(pool) {
   const createTableSQL = `
     CREATE TABLE IF NOT EXISTS estoque (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -24,14 +24,14 @@ async function ensureTableExists(connection) {
       UNIQUE KEY (grupoabo, fatorrh)
     )
   `;
-  await connection.query(createTableSQL);
-  console.log("Tabela 'estoque' verificada/criada com sucesso.");
+  await pool.query(createTableSQL);
+  // console.log("Tabela 'estoque' verificada/criada com sucesso.");
 }
 
 // Insere ou atualiza os dados
 async function inserirDados(dados) {
-  const connection = await getConnection();
-  await ensureTableExists(connection);
+  const pool = await getConnection(); // Agora retorna o pool
+  await ensureTableExists(pool);
 
   try {
     const sql = `
@@ -51,13 +51,14 @@ async function inserirDados(dados) {
       item.cobertura,
     ]);
 
-    const [resultado] = await connection.query(sql, [valores]);
+    const [resultado] = await pool.query(sql, [valores]);
     console.log(`Inseridos/Atualizados ${resultado.affectedRows} registros.`);
   } catch (erro) {
+    // Se falhar por tabela inexistente, tenta novamente (embora ensureTableExists deva cobrir)
     console.error("Erro ao inserir dados:", erro.message);
-  } finally {
-    connection.release();
   }
+  // NÃO chamar connection.release() aqui porque estamos usando pool.query() diretamente,
+  // que gerencia a conexão internamente.
 }
 
 // Busca dados da API e salva localmente
@@ -95,7 +96,7 @@ async function importarEstoque() {
   const dados = await fetchAndSave();
   if (dados && Array.isArray(dados)) {
     await inserirDados(dados);
-    console.log("Importação concluída com sucesso!");
+    // console.log("Importação concluída com sucesso!");
   } else {
     console.log("Nenhum dado para importar.");
   }

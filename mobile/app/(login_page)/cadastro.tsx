@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons"
 import { Stack, useRouter } from "expo-router"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import {
   ActivityIndicator,
   Image,
@@ -15,6 +15,10 @@ import {
   Alert,
 } from "react-native"
 import api from "@/src/services/api";
+import { useIdTokenAuthRequest } from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export function getServerSideProps() {
   console.log("SSR redirect to / (login_page)/splash")
@@ -48,6 +52,50 @@ const CadastroScreen = () => {
   const [isSenhaVisible, setIsSenhaVisible] = useState(false)
   const [isConfirmarSenhaVisible, setIsConfirmarSenhaVisible] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  WebBrowser.maybeCompleteAuthSession();
+
+  const extra = Constants.expoConfig?.extra || {};
+  const webClientId = extra.GOOGLE_WEB_CLIENT_ID ||
+    '186834080659-bvsr5g2ocvu78j8dq2sa8oj6kdm0nbn2.apps.googleusercontent.com';
+  const androidClientId = extra.GOOGLE_ANDROID_CLIENT_ID ||
+    '186834080659-bvsr5g2ocvu78j8dq2sa8oj6kdm0nbn2.apps.googleusercontent.com';
+  const iosClientId = extra.GOOGLE_IOS_CLIENT_ID ||
+    '186834080659-bvsr5g2ocvu78j8dq2sa8oj6kdm0nbn2.apps.googleusercontent.com';
+
+  const [request, response, promptAsync] = useIdTokenAuthRequest({
+    webClientId,
+    androidClientId,
+    iosClientId,
+    scopes: ['openid', 'profile', 'email'],
+  });
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      const idToken = response.params?.id_token;
+      handleGoogleLogin(idToken);
+    }
+  }, [response]);
+
+  const handleGoogleLogin = async (idToken: string | undefined) => {
+      if (!idToken) return;
+
+      try {
+          setLoading(true); // Usa o mesmo loading do form
+          const res = await api.post("/auth/google", { idToken });
+          if (res.status === 200 && res.data.token) {
+              await AsyncStorage.setItem('user_token', res.data.token);
+              router.replace("/(home_page)/home_page");
+          } else {
+              Alert.alert("Erro", `Erro de autenticação: ${res.data.error || "Desconhecido"}`);
+          }
+      } catch (error) {
+          console.error("Erro no login google:", error);
+          Alert.alert("Erro", "Falha ao conectar com o servidor.");
+      } finally {
+          setLoading(false);
+      }
+  }
 
   const handleRegister = async () => {
     if (!nome || !email || !senha || !confirmarSenha) {
@@ -87,7 +135,7 @@ const CadastroScreen = () => {
       }
     } catch (error: any) {
       console.error("Erro no registro:", error);
-      const msg = error.response?.data?.error || "Erro ao conectar ao servidor.";
+      const msg = error.response?.data?.error || "Erro ao conectar ao servidor. Verifique sua conexão.";
       Alert.alert("Erro", msg);
     } finally {
       setLoading(false);
@@ -189,7 +237,11 @@ const CadastroScreen = () => {
           </View>
 
           <View style={styles.socialLoginContainer}>
-            <TouchableOpacity style={styles.socialButton}>
+            <TouchableOpacity
+                style={styles.socialButton}
+                onPress={() => promptAsync()}
+                disabled={!request || loading}
+            >
               <Image source={googleLogo} style={styles.socialLogo} />
               <Text style={styles.socialButtonText}>Google</Text>
             </TouchableOpacity>
