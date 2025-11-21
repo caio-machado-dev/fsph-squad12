@@ -1,12 +1,12 @@
 import { getConnection } from "../config/database.js";
 
 export async function getHistory(req, res) {
-  const connection = await getConnection();
+  const pool = await getConnection();
   try {
     const { id } = req.user;
 
     // Busca doações realizadas (confirmadas)
-    const [doacoes] = await connection.query(
+    const [doacoes] = await pool.query(
         `SELECT
             id_doacao as id,
             data_doacao as date,
@@ -20,7 +20,7 @@ export async function getHistory(req, res) {
     );
 
     // Busca agendamentos (futuros e passados)
-    const [agendamentos] = await connection.query(
+    const [agendamentos] = await pool.query(
         `SELECT
             id_agendamento as id,
             data_agendamento as date,
@@ -33,7 +33,6 @@ export async function getHistory(req, res) {
     );
 
     // Unifica e ordena
-    // Adiciona flag para saber origem
     const history = [
         ...doacoes.map(d => ({...d, origin: 'donation'})),
         ...agendamentos.map(a => ({...a, origin: 'appointment'}))
@@ -44,7 +43,5 @@ export async function getHistory(req, res) {
   } catch (error) {
     console.error("Erro ao buscar histórico:", error);
     res.status(500).json({ error: "Erro interno ao buscar histórico." });
-  } finally {
-    connection.release();
   }
 }
