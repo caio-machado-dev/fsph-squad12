@@ -108,9 +108,9 @@ const CadastroScreen = () => {
       return;
     }
 
-    // Validação básica de senha (ex: min 6 chars)
-    if (senha.length < 6) {
-       Alert.alert("Erro", "A senha deve ter no mínimo 6 caracteres.");
+    // Validação básica de senha (min 8 chars)
+    if (senha.length < 8) {
+       Alert.alert("Erro", "A senha deve ter no mínimo 8 caracteres.");
        return;
     }
 
